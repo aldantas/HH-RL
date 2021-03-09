@@ -15,7 +15,6 @@ class DMABAgent:
         self.t = 0
         self.ph = PageHinkley(config)
         self.n, self.p = 0, 0
-
     def __str__(self):
         return f'DMAB - Policy: {str(self.policy)}'
 

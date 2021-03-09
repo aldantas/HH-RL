@@ -2,13 +2,15 @@ from .fifo_list import FIFOList
 
 
 class ExtremeValue:
-    def __init__(self, config, n_actions, normalize=False):
+    def __init__(self, config, actions, normalize=False):
         self.window_size = config['ExtremeValue'].getint('window_size', 20)
         self.normalize = normalize
-        self.n_actions = n_actions
-        self.reward_windows = [FIFOList(self.window_size) for _ in range(n_actions)]
+        self.actions = actions
+        self.n_actions = len(actions)
+        self.reward_windows = [FIFOList(self.window_size) for _ in range(self.n_actions)]
 
-    def get_reward(self, value, action_idx):
+    def get_reward(self, value, action):
+        action_idx = self.actions.index(action)
         action_reward_window = self.reward_windows[action_idx]
         action_reward_window.append(value)
         reward = max(action_reward_window)

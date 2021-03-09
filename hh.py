@@ -37,6 +37,7 @@ class HyperHeuristic:
             if self.acceptance.is_solution_accepted(delta):
                 self.problem.copySolution(1, 0)
                 current_fitness = fitness
+            self.agent.update(reward, llh)
             stats.push_fitness(current_fitness, self.problem.getBestSolutionValue())
             iterations += 1
         stats.best_fitness = self.problem.getBestSolutionValue()

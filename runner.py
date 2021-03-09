@@ -16,7 +16,7 @@ def main(config):
     # self.problem.setMemorySize(3)
     actions = [0,1,2,3,4,7,8,9]
     agent = DMABAgent(config, actions)
-    credit_assignment = ExtremeValue(config, len(actions))
+    credit_assignment = ExtremeValue(config, actions)
     acceptance = AcceptAll()
 
     hh = HyperHeuristic(problem, agent, credit_assignment, acceptance, chesc)
