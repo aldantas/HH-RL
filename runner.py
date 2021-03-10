@@ -11,10 +11,9 @@ from hh import HyperHeuristic
 
 def main(args, config):
     hyflex = JavaGateway().jvm
-    instance_id = 0
     seed = random.randint(0,10000)
     problem = eval('hyflex.' + get_problem(args.problem))
-    problem.loadInstance(instance_id)
+    problem.loadInstance(args.instance_id)
     chesc = hyflex.CHeSC(0, 600000, problem)
     # self.problem.setMemorySize(3)
     actions = [0,1,2,3,4,7,8,9]
