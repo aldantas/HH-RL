@@ -1,16 +1,19 @@
 from py4j.java_gateway import JavaGateway
 import configparser
 import random
+import argparse
+import csv
 from agent.mab import DMABAgent
 from credit import ExtremeValue
 from acceptance import AcceptAll
 from hh import HyperHeuristic
 
 
-def main(config):
+def main(args, config):
     hyflex = JavaGateway().jvm
     instance_id = 0
-    problem = hyflex.VRP.VRP(random.randint(0,10000))
+    seed = random.randint(0,10000)
+    problem = eval('hyflex.' + get_problem(args.problem))
     problem.loadInstance(instance_id)
     chesc = hyflex.CHeSC(0, 600000, problem)
     # self.problem.setMemorySize(3)
@@ -26,7 +29,24 @@ def main(config):
     print(stats.run_time)
 
 
+def get_problem(problem):
+    problem_dict = {}
+    reader = csv.DictReader(open(f'configs/problems.csv'), delimiter=';')
+    for row in reader:
+        if row['problem'] == problem:
+            return row['call']
+
+
+def parse_args(desc=''):
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('-p', '--problem', type=str, default='VRP')
+    parser.add_argument('-i', '--instance_id', type=int, default=0)
+    parser.add_argument('-r', '--run_id', type=int, default=0)
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read(f'configs/default-config.ini')
-    main(config)
+    args = parse_args()
+    main(args, config)

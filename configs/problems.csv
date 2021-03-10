@@ -1,0 +1,6 @@
+problem;call
+VRP;VRP.VRP(seed)
+BP;BinPacking.BinPacking(seed)
+SAT;SAT.SAT(seed)
+FS;FlowShop.FlowShop(seed)
+TSP;travelingSalesmanProblem.TSP(seed)
