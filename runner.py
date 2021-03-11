@@ -3,10 +3,10 @@ import configparser
 import random
 import argparse
 import csv
-from agent.mab import DMABAgent
-from credit import ExtremeValue
-from acceptance import AcceptAll
-from hh import HyperHeuristic
+from hhrl.agent.mab import DMABAgent, FRRMABAgent
+from hhrl.reward import ExtremeValue, ImprovementRate
+from hhrl.acceptance import AcceptAll
+from hhrl.hh import HyperHeuristic
 
 
 def main(args, config):
@@ -17,8 +17,8 @@ def main(args, config):
     chesc = hyflex.CHeSC(0, 600000, problem)
     # self.problem.setMemorySize(3)
     actions = [0,1,2,3,4,7,8,9]
-    agent = DMABAgent(config, actions)
-    credit_assignment = ExtremeValue(config, actions)
+    agent = FRRMABAgent(config, actions)
+    credit_assignment = ImprovementRate(config, actions)
     acceptance = AcceptAll()
 
     hh = HyperHeuristic(problem, agent, credit_assignment, acceptance, chesc)

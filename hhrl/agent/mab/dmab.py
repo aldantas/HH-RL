@@ -1,4 +1,4 @@
-from .page_hinkley import PageHinkley
+from hhrl.util.page_hinkley import PageHinkley
 from .ucb import UCBPolicy
 
 
@@ -15,6 +15,7 @@ class DMABAgent:
         self.t = 0
         self.ph = PageHinkley(config)
         self.n, self.p = 0, 0
+
     def __str__(self):
         return f'DMAB - Policy: {str(self.policy)}'
 
@@ -24,7 +25,7 @@ class DMABAgent:
         self.t = 0
 
     def select(self):
-        action_idx = self.policy.choose(self)
+        action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
     def update(self, reward, action):

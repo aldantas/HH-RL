@@ -6,11 +6,14 @@ class FIFOList(list):
     def _truncate(self):
         dif = len(self)-self.max_size
         if dif > 0:
+            popped = self[:dif]
             self[:dif]=[]
+            return popped
+        return []
 
     def append(self, x):
         list.append(self, x)
-        self._truncate()
+        return self._truncate()
 
     def is_full(self):
         return len(self) == self.max_size

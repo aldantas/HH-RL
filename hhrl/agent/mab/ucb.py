@@ -11,7 +11,7 @@ class UCBPolicy():
     def __str__(self):
         return f'UCB (c={self.c})'
 
-    def choose(self, agent):
+    def select(self, agent):
         if agent.t == 0:
             exploration = np.zeros(len(agent.actions))
         else:

@@ -1,5 +1,5 @@
 import time
-from stats_info import StatsInfo
+from hhrl.util.stats_info import StatsInfo
 
 
 class HyperHeuristic:
@@ -33,7 +33,7 @@ class HyperHeuristic:
             llh = self.agent.select()
             fitness = self.problem.applyHeuristic(llh, 0, 1)
             delta = current_fitness - fitness
-            reward = self.credit_assignment.get_reward(delta, llh)
+            reward = self.credit_assignment.get_reward(llh, fitness, current_fitness)
             if self.acceptance.is_solution_accepted(delta):
                 self.problem.copySolution(1, 0)
                 current_fitness = fitness

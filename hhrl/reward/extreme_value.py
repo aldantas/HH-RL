@@ -1,4 +1,4 @@
-from .fifo_list import FIFOList
+from hhrl.util.fifo_list import FIFOList
 
 
 class ExtremeValue:
@@ -9,10 +9,11 @@ class ExtremeValue:
         self.n_actions = len(actions)
         self.reward_windows = [FIFOList(self.window_size) for _ in range(self.n_actions)]
 
-    def get_reward(self, value, action):
+    def get_reward(self, action, new_fitness, past_fitness):
+        fit_diff = past_fitness - new_fitness
         action_idx = self.actions.index(action)
         action_reward_window = self.reward_windows[action_idx]
-        action_reward_window.append(value)
+        action_reward_window.append(fit_diff)
         reward = max(action_reward_window)
         if self.normalize:
             return self.normalize_reward(reward)
