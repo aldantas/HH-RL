@@ -3,7 +3,7 @@ from .ucb import UCBPolicy
 
 
 class DMABAgent:
-    def __init__(self, config, actions, prior=[]):
+    def __init__(self, config, actions, prior=[], **kwargs):
         self.policy = UCBPolicy(config)
         self.prior = prior
         n_actions = len(actions)
@@ -28,7 +28,7 @@ class DMABAgent:
         action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
-    def update(self, reward, action):
+    def update(self, action, reward):
         self.ph.add_element(reward)
         if self.ph.detected_change():
             self.p += 1

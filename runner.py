@@ -4,7 +4,9 @@ import random
 import argparse
 import csv
 from hhrl.agent.mab import DMABAgent, FRRMABAgent
+from hhrl.agent.rl import DQNAgent
 from hhrl.reward import ExtremeValue, ImprovementRate
+from hhrl.state import SlidingWindowState
 from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
 
@@ -17,11 +19,12 @@ def main(args, config):
     chesc = hyflex.CHeSC(0, 600000, problem)
     # self.problem.setMemorySize(3)
     actions = [0,1,2,3,4,7,8,9]
-    agent = FRRMABAgent(config, actions)
-    credit_assignment = ImprovementRate(config, actions)
+    state_env = SlidingWindowState(config, actions)
+    agent = DQNAgent(config, actions, state_env=state_env)
+    reward = ImprovementRate(config, actions)
     acceptance = AcceptAll()
 
-    hh = HyperHeuristic(problem, agent, credit_assignment, acceptance, chesc)
+    hh = HyperHeuristic(problem, agent, reward, acceptance, chesc)
     stats = hh.run()
     stats.save()
     print(stats.best_fitness)
