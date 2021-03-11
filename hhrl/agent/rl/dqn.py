@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.neural_network import MLPRegressor
 from sklearn.exceptions import NotFittedError
-from hhrl.state import SlidingWindowState
 from .egreedy import EpsilonGreedyPolicy
 
 

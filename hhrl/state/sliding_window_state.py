@@ -1,4 +1,3 @@
-from sklearn.preprocessing import MinMaxScaler
 from hhrl.util import SlidingWindow
 
 
@@ -7,7 +6,6 @@ class SlidingWindowState:
         self.window_size = config['SlidingWindowState'].getint('window_size', 100)
         self.sliding_window = SlidingWindow(self.window_size, len(actions))
         self.actions = actions
-        self.scaler = MinMaxScaler()
 
     def reset(self):
         self.sliding_window = SlidingWindow(self.window_size, len(self.actions))
