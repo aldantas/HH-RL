@@ -16,6 +16,9 @@ class StatsInfo:
         self.best_fitness = None
         self.iterations = 0
 
+    def __str__(self):
+        return str(self.best_fitness)
+
     def push_heuristic(self, heuristic, reward):
         self.heuristic_hist.append(heuristic)
         self.reward_hist.append(reward)
