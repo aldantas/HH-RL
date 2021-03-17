@@ -1,0 +1,16 @@
+{
+  "class": "VRP.VRP",
+  "actions": [0,1,2,3,4,7,8,9],
+  "instances": {
+    "0": "Solomon_100_customer_instances/RC207",
+    "1": "Solomon_100_customer_instances/R101",
+    "2": "Solomon_100_customer_instances/RC103",
+    "3": "Solomon_100_customer_instances/R201",
+    "4": "Solomon_100_customer_instances/R106",
+    "5": "Homberger_1000_customer_instances/C1_10_1",
+    "6": "Homberger_1000_customer_instances/RC2_10_1",
+    "7": "Homberger_1000_customer_instances/R1_10_1",
+    "8": "Homberger_1000_customer_instances/C1_10_8",
+    "9": "Homberger_1000_customer_instances/RC1_10_5"
+  }
+}

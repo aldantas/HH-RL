@@ -15,6 +15,11 @@ configs=(
 	configs/default-config.ini
 	)
 
+problems=(
+	VRP
+	TSP
+	)
+
 agents=(
 	DQN
 	DMAB
@@ -31,14 +36,16 @@ acceptances=(
 	)
 
 run() {
-	instance=$1
-	config=$2
-	agent=$3
-	reward=$4
-	acceptance=$5
-	id=$6
-	python runner.py -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -t 300 -r $id
+	problem=$1
+	instance=$2
+	config=$3
+	agent=$4
+	reward=$5
+	acceptance=$6
+	id=$7
+	output_dir="/mnt/NAS/aldantas/HHRL"
+	python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
 }
 
 export -f run
-eval 'parallel --jobs 10 --progress -u run ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}"  ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'
+eval 'parallel --jobs 10 --progress -u run ::: "${problems[@]}" ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}"  ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'
