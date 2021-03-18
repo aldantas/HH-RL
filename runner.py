@@ -41,7 +41,7 @@ def output_path(args, config, problem_dict, rootdir=''):
 def main(args):
     config = configparser.ConfigParser()
     config.read(args.config)
-    with open(f'problems_json//{args.problem}.json', 'r') as json_file:
+    with open(f'problems_json/{args.problem}.json', 'r') as json_file:
         problem_dict = json.load(json_file)
     path = output_path(args, config, problem_dict, rootdir=args.output_dir)
     if (path / f'{args.run_id}.dat').exists() and not args.overwrite:
