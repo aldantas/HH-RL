@@ -1,0 +1,16 @@
+{
+  "class": "SAT.SAT",
+  "actions": [0,1,2,3,4,5,6,7,8],
+  "instances": {
+    "0": "sat05-457",
+    "1": "sat05-488",
+    "2": "sat05-486",
+    "3": "instance_n3_i3_pp",
+    "4": "instance_n3_i3_pp_ci_ce",
+    "5": "instance_n3_i4_pp_ci_ce",
+    "6": "HG-3SAT-V250-C1000-1",
+    "7": "HG-3SAT-V250-C1000-2",
+    "8": "HG-3SAT-V300-C1200-2",
+    "9": "t7pm3-9999"
+  }
+}

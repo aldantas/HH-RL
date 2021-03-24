@@ -1,0 +1,16 @@
+{
+  "class": "BinPacking.BinPacking",
+  "actions": [0,1,2,3,4,5,6],
+  "instances": {
+    "0": "falkenauer/falk1000-1",
+    "1": "falkenauer/falk1000-2",
+    "2": "schoenfield/schoenfieldhard1",
+    "3": "schoenfield/schoenfieldhard2",
+    "4": "2000/10-30/instance1",
+    "5": "2000/10-30/instance2",
+    "6": "trip1002/instance1",
+    "7": "trip2004/instance1",
+    "8": "testdual4/binpack0",
+    "9": "testdual7/binpack0"
+  }
+}

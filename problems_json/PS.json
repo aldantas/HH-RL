@@ -1,0 +1,16 @@
+{
+  "class": "PersonnelScheduling.PersonnelScheduling",
+  "actions": [0,1,2,3,4,5,6,7,11],
+  "instances": {
+    "0": "BCV-3.46.1",
+    "1": "BCV-A.12.2",
+    "2": "ORTEC02",
+    "3": "Ikegami-3Shift-DATA1",
+    "4": "Ikegami-3Shift-DATA1.1",
+    "5": "Ikegami-3Shift-DATA1.2",
+    "6": "CHILD-A2",
+    "7": "ERRVH-A",
+    "8": "ERRVH-B",
+    "9": "MER-A"
+  }
+}
