@@ -18,6 +18,10 @@ configs=(
 problems=(
 	VRP
 	TSP
+	BP
+	FS
+	PS
+	SAT
 	)
 
 agents=(
