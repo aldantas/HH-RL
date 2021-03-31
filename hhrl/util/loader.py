@@ -51,7 +51,7 @@ class Loader:
             str_key += f'-{key}'
         return str_key.lstrip('-')
 
-    def lazy_load(self, directory, attributes, split_depth=1, black_list=[]):
+    def lazy_load(self, directory, attributes, split_depth=1, black_list=[], use_attr_list=False):
         paths_dict = self.get_paths_dict(directory, split_depth)
         for instance_path in tqdm(paths_dict):
             if self.__is_black_listed(instance_path, black_list):
@@ -62,15 +62,23 @@ class Loader:
                 if self.__is_black_listed(config_path, black_list):
                     continue
                 path = instance_path / config_path
-                config_key = self.__tuple_to_str_key(config_path.parts)
-                instance_dict[config_key] = {}
+                #TODO: parameterize the config_key slicing
+                config_key = self.__tuple_to_str_key(config_path.parts[:2])
+                if use_attr_list:
+                    instance_dict[config_key] = []
+                else:
+                    instance_dict[config_key] = {}
                 for file in tqdm(os.listdir(path), leave=False):
                     for attr_str, attr_value in self.read_file_attrs(path/file, attributes):
-                        instance_dict[config_key].setdefault(attr_str,[]).append(attr_value)
+                        if use_attr_list:
+                            instance_dict[config_key].append(attr_value)
+                        else:
+                            instance_dict[config_key].setdefault(attr_str,[]).append(attr_value)
             yield instance_key, instance_dict
 
-    def load(self, directory, attributes, split_depth=1, black_list=[]):
+    def load(self, directory, attributes, split_depth=1, black_list=[], use_attr_list=False):
         results_dict = {}
-        for instance_key, instance_dict in self.lazy_load(directory, attributes, split_depth, black_list):
+        for instance_key, instance_dict in self.lazy_load(
+                directory, attributes, split_depth, black_list, use_attr_list):
             results_dict[instance_key] = instance_dict
         return results_dict
