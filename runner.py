@@ -6,6 +6,7 @@ import argparse
 import pathlib
 import random
 import json
+from hhrl.agent import RandomAgent
 from hhrl.agent.mab import DMABAgent, FRRMABAgent
 from hhrl.agent.rl import DQNAgent
 from hhrl.reward import ExtremeValue, ImprovementRate
@@ -18,6 +19,7 @@ agent_dict = {
         'DQN': DQNAgent,
         'DMAB': DMABAgent,
         'FRRMAB': FRRMABAgent,
+        'RAND': RandomAgent,
         }
 
 

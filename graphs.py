@@ -1,10 +1,15 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 import csv
 from hhrl.util import Loader
 from stattests import StatTests
+from tablemaker import TableMaker
 
 
 MEDIUM_SIZE = 16
@@ -35,6 +40,13 @@ def get_snapshots(full_trace, n_snapshots=100):
     snapshots = [full_trace[i] for i in range(0, len(full_trace), step)]
     snapshots[-1] = full_trace[-1]
     return snapshots
+
+def make_label(config, whitelist, split_char='-'):
+    config_keys = config.split(split_char)
+    allowed_keys = []
+    for key in config_keys:
+        if key in whitelist:
+            allowed_keys
 
 
 def plot_avg_history(instance, instance_dict, attributes):
@@ -72,8 +84,9 @@ def make_boxplot(instance, instance_dict, attr='best_fitness'):
         # avg_history = np.mean([h[:to_trunc] for h in history], 0)
         # iterations = range(len(avg_history))
     plt.boxplot(boxes)
-    plt.gca().set_xticklabels(labels, rotation=45, fontsize=8)
-    plt.title(instance)
+    plt.gca().set_xticklabels(labels, fontsize=8)
+    # plt.gca().set_xticklabels(labels, rotation=45, fontsize=8)
+    # plt.title(instance)
     # plt.xlabel("Iterations")
     # plt.ylabel(attr)
     # plt.yticks(np.arange(0, 100, 10))
@@ -84,37 +97,57 @@ def make_boxplot(instance, instance_dict, attr='best_fitness'):
     plt.close()
 
 
-def save_configs_performance(filename, results_dict, attr='best_fitness'):
-    if not filename.endswith('.csv'):
-        filename = filename + '.csv'
-    outfile = open(filename, 'w')
-    w = csv.writer(outfile, delimiter=';')
+def save_configs_performance(filename, results_dict, performance_dict, file_type='csv'):
     for instance_key in results_dict:
-        configs = []
+        header = ['Instance']
         for config in sorted(results_dict[instance_key]):
-            configs.append(config)
+            header.append(config)
         break
-    w.writerow([' ']+ configs)
+    print(header)
+    if file_type == 'csv':
+        filename = filename + '.csv'
+        outfile = open(filename, 'w')
+        w = csv.writer(outfile, delimiter=';')
+        w.writerow(header)
+    elif file_type == 'tex':
+        filename = filename + '.tex'
+        w = TableMaker(filename, header)
+    else:
+        print(f'Invalid {file_type} format')
+        return
     for instance_key in results_dict:
-        instance_type = instance_key.split('_')[0]
-        instance_name = instance_key.split('-')[-1].split('.')[0]
+        instance_type = instance_key.split('-')[0]
+        instance_name = instance_key.split('-')[-1]
         instance = f'{instance_type}-{instance_name}'
         row = [instance]
+        bold_mask, bg_mask = [False], [False]
         for config in sorted(results_dict[instance_key]):
-            results = results_dict[instance_key][config][attr]
+            if instance_key in performance_dict[config]['equivalent']:
+                bold_mask.append(False)
+                bg_mask.append(True)
+            elif instance_key in performance_dict[config]['better']:
+                bold_mask.append(True)
+                bg_mask.append(True)
+            else:
+                bg_mask.append(False)
+                bold_mask.append(False)
+            results = results_dict[instance_key][config]
             mean = np.around(np.mean(results), 2)
             std = np.around(np.std(results), 2)
             cell = f'{mean} ({std})'
             row.append(cell)
-        w.writerow(row)
-    outfile.close()
+        print(len(row), len(bold_mask), len(bg_mask))
+        w.writerow(row, bold_mask, bg_mask)
+    if file_type == 'csv':
+        outfile.close()
+    elif file_type == 'tex':
+        w.save('Table')
 
 
-def make_table_n_boxplots(directory, black_list):
+def make_boxplots(directory, black_list, key_whitelist):
     loader = Loader()
     attributes = ['best_fitness']
-    results_dict = loader.load(directory, attributes, 4, black_list)
-    save_configs_performance('TSP_configs_performance', results_dict, attributes[0])
+    results_dict = loader.load(directory, attributes, 4, black_list, key_whitelist)
     for instance in results_dict:
         make_boxplot(instance, results_dict[instance])
 
@@ -127,14 +160,14 @@ def make_history_plots(directory, black_list):
         plot_avg_history(instance, instance_dict, attributes)
 
 
-def make_hypothesis_test(directory, black_list):
+def make_hypothesis_test(directory, black_list, key_whitelist):
     loader = Loader()
     outdir = 'statistic_plots/'
     stat = StatTests(outdir)
     attributes = ['best_fitness']
-    results_dict = loader.load(directory, attributes, 4, black_list, True)
+    results_dict = loader.load(directory, attributes, 4, black_list, key_whitelist, True)
     df = pd.DataFrame.from_dict(results_dict, orient='index')
-    experiment_name = 'VRP_TSP_DMAB'
+    experiment_name = 'TSP_VRP_DQN_DMAB_FRRMAB'
     performance_dict = stat.kruskal_dunn(df, f'{experiment_name}_instance_performance.pdf')
     df = df.applymap(np.mean)
     correct = 'bergmann'
@@ -142,22 +175,19 @@ def make_hypothesis_test(directory, black_list):
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
     correct = 'finner'
-    control = 'DQN-IR'
+    control = 'DQN'
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
-    # for setup in performance_dict:
-    #     print(setup)
-    #     print(f"better: {len(performance_dict[setup]['better'])}")
-    #     print(f"equivalent: {len(performance_dict[setup]['equivalent'])}")
-    #     print(f"worse: {len(performance_dict[setup]['worse'])}")
+    save_configs_performance('VRP_TSP_configs_performance', results_dict, performance_dict, 'tex')
 
 
 def main():
     directory = 'results'
-    black_list = ['DQN', 'FRRMAB', 'BP', 'FS', 'PS', 'SAT']
-    # make_table_n_boxplots(directory, black_list)
+    black_list = ['BP', 'FS', 'PS', 'SAT', 'EV', 'rank_decay_05']
+    key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
+    # make_boxplots(directory, black_list, key_whitelist)
     # make_history_plots(directory, black_list)
-    make_hypothesis_test(directory, black_list)
+    make_hypothesis_test(directory, black_list, key_whitelist)
 
 if __name__ == '__main__':
     main()

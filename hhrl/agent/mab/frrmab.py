@@ -11,7 +11,7 @@ class FRRMABAgent:
         if len(prior) != n_actions:
             self.prior = [.0] * n_actions
         self.value_estimates = self.prior
-        self.decay_factor = config['FRRMABAgent'].getint('decay_factor', 1)
+        self.decay_factor = config['FRRMABAgent'].getfloat('decay_factor', 1)
         window_size = config['FRRMABAgent'].getint('window_size', 100)
         self.sliding_window = SlidingWindow(window_size, n_actions)
         self.action_attempts = self.sliding_window.count_list

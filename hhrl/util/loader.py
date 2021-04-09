@@ -45,13 +45,17 @@ class Loader:
                 return True
         return False
 
-    def __tuple_to_str_key(self, keys_tuple):
+    def __tuple_to_str_key(self, keys_tuple, key_whitelist=None):
         str_key = ''
+        if key_whitelist is None:
+            key_whitelist = keys_tuple
         for key in keys_tuple:
-            str_key += f'-{key}'
+            if key in key_whitelist:
+                str_key += f'-{key}'
         return str_key.lstrip('-')
 
-    def lazy_load(self, directory, attributes, split_depth=1, black_list=[], use_attr_list=False):
+    def lazy_load(self, directory, attributes, split_depth=1, black_list=[], key_whitelist=None,
+            use_attr_list=False):
         paths_dict = self.get_paths_dict(directory, split_depth)
         for instance_path in tqdm(paths_dict):
             if self.__is_black_listed(instance_path, black_list):
@@ -63,7 +67,8 @@ class Loader:
                     continue
                 path = instance_path / config_path
                 #TODO: parameterize the config_key slicing
-                config_key = self.__tuple_to_str_key(config_path.parts[:2])
+                # config_key = self.__tuple_to_str_key(config_path.parts[:2])
+                config_key = self.__tuple_to_str_key(config_path.parts, key_whitelist)
                 if use_attr_list:
                     instance_dict[config_key] = []
                 else:
@@ -76,9 +81,10 @@ class Loader:
                             instance_dict[config_key].setdefault(attr_str,[]).append(attr_value)
             yield instance_key, instance_dict
 
-    def load(self, directory, attributes, split_depth=1, black_list=[], use_attr_list=False):
+    def load(self, directory, attributes, split_depth=1, black_list=[], key_whitelist=None,
+            use_attr_list=False):
         results_dict = {}
         for instance_key, instance_dict in self.lazy_load(
-                directory, attributes, split_depth, black_list, use_attr_list):
+                directory, attributes, split_depth, black_list, key_whitelist, use_attr_list):
             results_dict[instance_key] = instance_dict
         return results_dict

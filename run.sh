@@ -28,6 +28,7 @@ agents=(
 	DQN
 	DMAB
 	FRRMAB
+	RAND
 	)
 
 rewards=(
