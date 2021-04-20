@@ -7,6 +7,7 @@ matplotlib.rcParams['ps.fonttype'] = 42
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 import csv
+import json
 from hhrl.util import Loader
 from stattests import StatTests
 from tablemaker import TableMaker
@@ -41,6 +42,7 @@ def get_snapshots(full_trace, n_snapshots=100):
     snapshots[-1] = full_trace[-1]
     return snapshots
 
+
 def make_label(config, whitelist, split_char='-'):
     config_keys = config.split(split_char)
     allowed_keys = []
@@ -70,8 +72,8 @@ def plot_avg_history(instance, instance_dict, attributes):
         plt.close()
 
 
-def make_boxplot(instance, instance_dict, attr='best_fitness'):
-    plotdir = f'instance_plots/boxplots'
+def make_boxplot(instance, instance_dict, output_dir='', attr='best_fitness'):
+    plotdir = f'{output_dir}/instance_plots/boxplots'
     os.system(f'mkdir -p {plotdir}')
     plt.figure()
     labels = []
@@ -144,12 +146,12 @@ def save_configs_performance(filename, results_dict, performance_dict, file_type
         w.save('Table')
 
 
-def make_boxplots(directory, black_list, key_whitelist):
+def make_boxplots(input_dir, output_dir, black_list, key_whitelist):
     loader = Loader()
     attributes = ['best_fitness']
-    results_dict = loader.load(directory, attributes, 4, black_list, key_whitelist)
+    results_dict = loader.load(input_dir, attributes, 4, black_list, key_whitelist)
     for instance in results_dict:
-        make_boxplot(instance, results_dict[instance])
+        make_boxplot(instance, results_dict[instance], output_dir)
 
 
 def make_history_plots(directory, black_list):
@@ -160,14 +162,20 @@ def make_history_plots(directory, black_list):
         plot_avg_history(instance, instance_dict, attributes)
 
 
-def make_hypothesis_test(directory, black_list, key_whitelist):
+def list_to_str(input_list):
+    output_str = ''
+    for item in input_list:
+        output_str += f'{item}_'
+    return output_str.rstrip('_')
+
+
+def make_hypothesis_test(input_dir, output_dir, problem_name, black_list, key_whitelist):
     loader = Loader()
-    outdir = 'statistic_plots/'
-    stat = StatTests(outdir)
+    stat = StatTests(output_dir)
     attributes = ['best_fitness']
-    results_dict = loader.load(directory, attributes, 4, black_list, key_whitelist, True)
+    results_dict = loader.load(input_dir, attributes, 4, black_list, key_whitelist, True)
     df = pd.DataFrame.from_dict(results_dict, orient='index')
-    experiment_name = 'TSP_VRP_DQN_DMAB_FRRMAB'
+    experiment_name = f'{problem_name}_{list_to_str(key_whitelist)}'
     performance_dict = stat.kruskal_dunn(df, f'{experiment_name}_instance_performance.pdf')
     df = df.applymap(np.mean)
     correct = 'bergmann'
@@ -178,16 +186,76 @@ def make_hypothesis_test(directory, black_list, key_whitelist):
     control = 'DQN'
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
-    save_configs_performance('VRP_TSP_configs_performance', results_dict, performance_dict, 'tex')
+    save_configs_performance(f'{problem_name}_configs_performance', results_dict, performance_dict, 'tex')
+
+
+def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, output_dir, n_phases=10):
+    all_runs_phases = [[] for i in range(n_phases)]
+    size = int(''.join(filter(str.isdigit, instance)))
+    # for each history from each of the 31 runs
+    for llh_hist in zip(heuristic_hists):
+        phase_size = int(len(llh_hist) / n_phases)
+        phases = [llh_hist[i:i + phase_size] for i in range(0, len(llh_hist), phase_size)]
+        for i in range(n_phases):
+            all_runs_phases[i].extend(phases[i])
+    actions_mean_dict = {}
+    for run_phase in all_runs_phases:
+        counter = Counter(run_phase)
+        total = sum(counter.values())
+        for action in heuristic_names:
+            if action in counter:
+                count = counter[action]
+            else:
+                count = 0
+            average = count / total * 100
+            actions_mean_dict.setdefault(action,[]).append(average)
+    plt.figure()
+    # colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
+    for i, action in enumerate(sorted(actions_mean_dict)):
+        avg_actions = actions_mean_dict[action]
+        try:
+            # plt.plot(range(n_phases), avg_actions, 'x-', color=colors[i], label=action, linewidth=1)
+            plt.plot(range(n_phases), avg_actions, label=action, linewidth=1)
+        except ValueError:
+            print(instance, action)
+    plt.xlabel("Search Phase")
+    plt.ylabel("Average Apliance (%)")
+    plt.legend(loc="best")
+    plotdir = f'{output_dir}/instance_plots/heuristics/'
+    os.system(f'mkdir -p {plotdir}')
+    filepath = f'{plotdir}/{instance}.png'
+    plt.savefig(filepath, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist):
+    loader = Loader()
+    # loader.n_snapshots = 100
+    attributes = ['heuristic_hist']
+    with open(f'problems_json/{problem}.json', 'r') as json_file:
+        problem_dict = json.load(json_file)
+    heuristic_names = problem_dict['actions']
+    for instance, heuristic_hists in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
+        plot_heuristic_hist(instance, heuristic_hists, heuristic_names, output_dir)
 
 
 def main():
-    directory = 'results'
-    black_list = ['BP', 'FS', 'PS', 'SAT', 'EV', 'rank_decay_05']
-    key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
-    # make_boxplots(directory, black_list, key_whitelist)
-    # make_history_plots(directory, black_list)
-    make_hypothesis_test(directory, black_list, key_whitelist)
+    input_dir = 'results'
+    output_root = 'plots'
+    key_whitelist = ['DQN', 'DMAB', 'FRRMAB', 'RAND']
+    problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
+    ignore_configs = ['EV', 'rank_decay_05']
+    for problem in problems:
+        black_list = problems + ignore_configs
+        black_list.remove(problem)
+        output_dir = f'{output_root}/{problem}'
+        # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+        # make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
+        make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+    # black_list = ignore_configs
+    # output_dir = f'{output_root}/ALL'
+    # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+    # make_hypothesis_test(input_dir, output_dir, 'ALL', black_list, key_whitelist)
+
 
 if __name__ == '__main__':
     main()
