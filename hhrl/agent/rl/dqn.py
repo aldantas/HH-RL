@@ -15,7 +15,9 @@ class DQNAgent:
             self.prior = [.0] * n_actions
         self.value_estimates = self.prior
         self.state_env = state_env
-        self.dqn = MLPRegressor(hidden_layer_sizes=(30,20), solver='adam')
+        self.learning_rate = config['DQNAgent'].getfloat('learning_rate', .001)
+        self.dqn = MLPRegressor(hidden_layer_sizes=(30,20), solver='adam',
+                learning_rate_init=self.learning_rate)
         self.state = self.state_env.get_state()
 
     def __str__(self):
@@ -24,6 +26,8 @@ class DQNAgent:
     def reset(self):
         self.value_estimates = self.prior
         self.state_env.reset()
+        self.dqn = MLPRegressor(hidden_layer_sizes=(30,20), solver='adam',
+                learning_rate_init=self.learning_rate)
 
     def __get_qvalues(self, state):
         try:

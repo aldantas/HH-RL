@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib
+from collections import Counter
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 import matplotlib.pyplot as plt
@@ -189,11 +190,10 @@ def make_hypothesis_test(input_dir, output_dir, problem_name, black_list, key_wh
     save_configs_performance(f'{problem_name}_configs_performance', results_dict, performance_dict, 'tex')
 
 
-def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, output_dir, n_phases=10):
+def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir, n_phases=10):
     all_runs_phases = [[] for i in range(n_phases)]
-    size = int(''.join(filter(str.isdigit, instance)))
     # for each history from each of the 31 runs
-    for llh_hist in zip(heuristic_hists):
+    for llh_hist in heuristic_hists:
         phase_size = int(len(llh_hist) / n_phases)
         phases = [llh_hist[i:i + phase_size] for i in range(0, len(llh_hist), phase_size)]
         for i in range(n_phases):
@@ -221,9 +221,9 @@ def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, output_dir, 
     plt.xlabel("Search Phase")
     plt.ylabel("Average Apliance (%)")
     plt.legend(loc="best")
-    plotdir = f'{output_dir}/instance_plots/heuristics/'
+    plotdir = f'{output_dir}/instance_plots/heuristics/{instance}'
     os.system(f'mkdir -p {plotdir}')
-    filepath = f'{plotdir}/{instance}.png'
+    filepath = f'{plotdir}/{config}.png'
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
 
@@ -234,12 +234,14 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
     with open(f'problems_json/{problem}.json', 'r') as json_file:
         problem_dict = json.load(json_file)
     heuristic_names = problem_dict['actions']
-    for instance, heuristic_hists in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
-        plot_heuristic_hist(instance, heuristic_hists, heuristic_names, output_dir)
+    for instance, instance_dict in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
+        for config in instance_dict:
+            heuristic_hists = instance_dict[config]
+            plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir)
 
 
 def main():
-    input_dir = 'results'
+    input_dir = 'HHRL_heuristic_hist/'
     output_root = 'plots'
     key_whitelist = ['DQN', 'DMAB', 'FRRMAB', 'RAND']
     problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
