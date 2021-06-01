@@ -3,7 +3,8 @@ class ImprovementRate:
         pass
 
     def get_reward(self, action, new_fitness, past_fitness):
-        return (past_fitness - new_fitness) / past_fitness
+        fir = (past_fitness - new_fitness) / past_fitness
+        return max(0, fir)
 
     def reset(self):
         pass

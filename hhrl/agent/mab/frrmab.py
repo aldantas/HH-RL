@@ -40,7 +40,7 @@ class FRRMABAgent:
         decays = [0] * len(self.actions)
         for rank, action_idx  in enumerate(ranking):
             action_reward = action_reward_sum[action_idx]
-            decays[action_idx] = (self.decay_factor ** rank) * action_reward
+            decays[action_idx] = (self.decay_factor ** (rank+1)) * action_reward
         decay_sum = sum(decays)
         if decay_sum == 0:
             return

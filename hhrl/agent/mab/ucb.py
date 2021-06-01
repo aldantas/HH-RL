@@ -15,8 +15,13 @@ class UCBPolicy():
         if agent.t == 0:
             exploration = np.zeros(len(agent.actions))
         else:
-            exploration = (2 * np.log10(agent.t)) / agent.action_attempts
+            attempts_sum = sum(agent.action_attempts)
+            exploration = (2 * np.log(attempts_sum)) / agent.action_attempts
             exploration[np.isnan(exploration)] = np.inf #fix the divisions by zero
             exploration = np.sqrt(exploration) * self.c
         q = agent.value_estimates + exploration
+        # if agent.t % 100 == 0:
+        #     print('Exp: ', exploration)
+        #     print('Est: ', agent.value_estimates)
+        #     print(q)
         return int(np.argmax(q))
