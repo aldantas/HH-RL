@@ -9,7 +9,7 @@ from hhrl.reward import *
 from hhrl.state import SlidingWindowState
 from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
-from hhrl.problem import TSP
+from hhrl.problem import *
 
 
 agent_dict = {
@@ -35,7 +35,9 @@ acceptance_dict = {
 
 
 domain_dict = {
-        'TSP': TSP,
+        'TSP': TravelingSalesman,
+        'FS': FlowShop,
+        'SAT': MAXSAT
         }
 
 
@@ -66,7 +68,7 @@ def main(args):
 
 def parse_args(desc=''):
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-p', '--problem', type=str, default='TSP')
+    parser.add_argument('-p', '--problem', type=str, default='SAT')
     parser.add_argument('-c', '--config', type=str, default='configs/default-config.ini')
     parser.add_argument('-o', '--output_dir', type=str, default='tmp')
     parser.add_argument('-i', '--instance_id', type=int, default=0)
