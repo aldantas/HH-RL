@@ -20,8 +20,4 @@ class UCBPolicy():
             exploration[np.isnan(exploration)] = np.inf #fix the divisions by zero
             exploration = np.sqrt(exploration) * self.c
         q = agent.value_estimates + exploration
-        # if agent.t % 100 == 0:
-        #     print('Exp: ', exploration)
-        #     print('Est: ', agent.value_estimates)
-        #     print(q)
         return int(np.argmax(q))

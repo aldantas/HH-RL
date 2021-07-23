@@ -2,14 +2,14 @@ from hhrl.util.fifo_list import FIFOList
 
 
 class ExtremeValue:
-    def __init__(self, config, actions, normalize=False):
+    def __init__(self, config, actions, normalize=False, *args):
         self.window_size = config['ExtremeValue'].getint('window_size', 20)
         self.normalize = normalize
         self.actions = actions
         self.n_actions = len(actions)
         self.reward_windows = [FIFOList(self.window_size) for _ in range(self.n_actions)]
 
-    def get_reward(self, action, new_fitness, past_fitness):
+    def get_reward(self, action, new_fitness, past_fitness, *args):
         fit_diff = past_fitness - new_fitness
         action_idx = self.actions.index(action)
         action_reward_window = self.reward_windows[action_idx]

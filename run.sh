@@ -34,6 +34,9 @@ agents=(
 rewards=(
 	IR
 	EV
+	DIV
+	IND
+	IOD
 	)
 
 acceptances=(

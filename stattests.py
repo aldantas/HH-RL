@@ -6,6 +6,7 @@ import rpy2.robjects as ro
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 plt.style.use('ggplot')
 
 rnp.activate()
@@ -34,6 +35,7 @@ class StatTests:
 
     def __init__(self, output_location='.'):
         self.output_location = output_location
+        os.system(f'mkdir -p {output_location}')
 
     def __open_plot_file(self, filename):
         extension = filename.split('.')[-1]

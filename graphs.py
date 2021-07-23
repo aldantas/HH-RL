@@ -100,7 +100,7 @@ def make_boxplot(instance, instance_dict, output_dir='', attr='best_fitness'):
     plt.close()
 
 
-def save_configs_performance(filename, results_dict, performance_dict, file_type='csv'):
+def save_configs_performance(filename, results_dict, performance_dict, problem, file_type='csv'):
     for instance_key in results_dict:
         header = ['Instance']
         for config in sorted(results_dict[instance_key]):
@@ -119,9 +119,10 @@ def save_configs_performance(filename, results_dict, performance_dict, file_type
         print(f'Invalid {file_type} format')
         return
     for instance_key in results_dict:
-        instance_type = instance_key.split('-')[0]
-        instance_name = instance_key.split('-')[-1]
-        instance = f'{instance_type}-{instance_name}'
+        # instance_type = instance_key.split('-')[0]
+        # instance_name = instance_key.split('-')[-1]
+        # instance = f'{instance_type}-{instance_name}'
+        instance = instance_key.lstrip(f'{problem}-')
         row = [instance]
         bold_mask, bg_mask = [False], [False]
         for config in sorted(results_dict[instance_key]):
@@ -135,8 +136,8 @@ def save_configs_performance(filename, results_dict, performance_dict, file_type
                 bg_mask.append(False)
                 bold_mask.append(False)
             results = results_dict[instance_key][config]
-            mean = np.around(np.mean(results), 2)
-            std = np.around(np.std(results), 2)
+            mean = np.around(np.mean(results), 4)
+            std = np.around(np.std(results), 4)
             cell = f'{mean} ({std})'
             row.append(cell)
         print(len(row), len(bold_mask), len(bg_mask))
@@ -144,7 +145,7 @@ def save_configs_performance(filename, results_dict, performance_dict, file_type
     if file_type == 'csv':
         outfile.close()
     elif file_type == 'tex':
-        w.save('Table')
+        w.save(caption=problem)
 
 
 def make_boxplots(input_dir, output_dir, black_list, key_whitelist):
@@ -187,7 +188,8 @@ def make_hypothesis_test(input_dir, output_dir, problem_name, black_list, key_wh
     control = 'DQN'
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
-    save_configs_performance(f'{problem_name}_configs_performance', results_dict, performance_dict, 'tex')
+    save_configs_performance(f'{problem_name}_configs_performance', results_dict, performance_dict,
+            problem_name, 'tex')
 
 
 def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir, n_phases=10):
@@ -241,23 +243,35 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
 
 
 def main():
-    input_dir = 'HHRL_heuristic_hist/'
-    output_root = 'plots'
-    key_whitelist = ['DQN', 'DMAB', 'FRRMAB', 'RAND']
-    problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
+    input_dir = 'HHRL_new_UCB/'
+    output_root = 'plots_new_UCB'
+    key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
+    # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
+    problems = ['BP']
     ignore_configs = ['EV', 'rank_decay_05']
+    ignore_configs += ['FS', 'PS', 'SAT', 'TSP', 'VRP']
     for problem in problems:
         black_list = problems + ignore_configs
         black_list.remove(problem)
         output_dir = f'{output_root}/{problem}'
         # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        # make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
-        make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+        make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
+        # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
     # black_list = ignore_configs
     # output_dir = f'{output_root}/ALL'
-    # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+    # # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
     # make_hypothesis_test(input_dir, output_dir, 'ALL', black_list, key_whitelist)
 
 
 if __name__ == '__main__':
+    # loader = Loader()
+    # attributes = ['best_fitness']
+    # input_dir = 'HHRL_new_UCB/'
+    # output_root = 'plots_new_UCB'
+    # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
+    # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
+    # ignore_configs = ['EV', 'rank_decay_05']
+    # black_list = problems + ignore_configs
+    # black_list.remove('VRP')
+    # results_dict = loader.load(input_dir, attributes, 4, black_list, key_whitelist, True)
     main()

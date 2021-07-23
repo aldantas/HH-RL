@@ -14,25 +14,27 @@ class HyperHeuristic:
         return self.elapsed
 
     def run(self, time_limit=3):
-        self.problem.initialiseSolution(0)
-        current_fitness = self.problem.getFunctionValue(0)
+        self.problem.initialise_solution()
+        current_fitness = self.problem.get_fitness()
+        solution = self.problem.get_solution()
         iterations = 0
         stats = StatsInfo(current_fitness)
         stats.push_fitness(current_fitness, current_fitness)
         self.start_time = time.process_time()
         while self.__elapsed_time() < time_limit:
             llh = self.agent.select()
-            fitness = self.problem.applyHeuristic(llh, 0, 1)
+            fitness = self.problem.apply_heuristic(llh)
+            solution = self.problem.get_solution()
             delta = current_fitness - fitness
-            reward = self.credit_assignment.get_reward(llh, fitness, current_fitness)
+            reward = self.credit_assignment.get_reward(llh, fitness, current_fitness, solution)
             if self.acceptance.is_solution_accepted(delta):
-                self.problem.copySolution(1, 0)
+                self.problem.accept_solution()
                 current_fitness = fitness
             self.agent.update(llh, reward)
-            stats.push_fitness(current_fitness, self.problem.getBestSolutionValue())
+            stats.push_fitness(current_fitness, self.problem.get_best_fitness())
             stats.push_heuristic(llh, reward)
             iterations += 1
-        stats.best_fitness = self.problem.getBestSolutionValue()
+        stats.best_fitness = self.problem.get_best_fitness()
         stats.run_time = self.elapsed
         stats.iterations = iterations
         return stats
