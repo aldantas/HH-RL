@@ -65,7 +65,6 @@ class StatTests:
         print(f'Friedman with {correct} PostHoc')
         # This is needed because the postHocTest method ranks according to the highest values (maximization
         # problems)
-        #
         df = df *-1
         r_df = self.__convert_df(df)
         if not control:
@@ -93,6 +92,7 @@ class StatTests:
             )
         rank_filepath = f'{self.output_location}/{rank_filename}'
         matrix_filepath = f'{self.output_location}/{matrix_filename}'
+        print(control)
         results = ro.r['f'](r_df, rank_filepath, matrix_filepath, correct, control)
         print(results)
 

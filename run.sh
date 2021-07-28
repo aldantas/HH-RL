@@ -16,24 +16,23 @@ configs=(
 	)
 
 problems=(
-	VRP
 	TSP
-	BP
 	FS
-	PS
 	SAT
+	# VRP
+	# BP
+	# PS
 	)
 
 agents=(
 	DQN
-	DMAB
-	FRRMAB
-	RAND
+	# DMAB
+	# FRRMAB
+	# RAND
 	)
 
 rewards=(
 	IR
-	EV
 	DIV
 	IND
 	IOD

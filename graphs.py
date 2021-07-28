@@ -52,9 +52,9 @@ def make_label(config, whitelist, split_char='-'):
             allowed_keys
 
 
-def plot_avg_history(instance, instance_dict, attributes):
+def plot_avg_history(instance, instance_dict, attributes, output_dir=''):
     for attr in attributes:
-        plotdir = f'instance_plots/history/{attr}'
+        plotdir = f'{output_dir}/instance_plots/history/{attr}'
         os.system(f'mkdir -p {plotdir}')
         plt.figure()
         for config in instance_dict:
@@ -126,12 +126,15 @@ def save_configs_performance(filename, results_dict, performance_dict, problem, 
         row = [instance]
         bold_mask, bg_mask = [False], [False]
         for config in sorted(results_dict[instance_key]):
+            is_equivalent = False
             if instance_key in performance_dict[config]['equivalent']:
                 bold_mask.append(False)
                 bg_mask.append(True)
+                is_equivalent = True
             elif instance_key in performance_dict[config]['better']:
                 bold_mask.append(True)
                 bg_mask.append(True)
+                is_equivalent = True
             else:
                 bg_mask.append(False)
                 bold_mask.append(False)
@@ -139,9 +142,13 @@ def save_configs_performance(filename, results_dict, performance_dict, problem, 
             mean = np.around(np.mean(results), 4)
             std = np.around(np.std(results), 4)
             cell = f'{mean} ({std})'
+            if is_equivalent:
+                cell += ' *'
             row.append(cell)
-        print(len(row), len(bold_mask), len(bg_mask))
-        w.writerow(row, bold_mask, bg_mask)
+        if file_type == 'csv':
+            w.writerow(row)
+        elif file_type == 'tex':
+            w.writerow(row, bold_mask, bg_mask)
     if file_type == 'csv':
         outfile.close()
     elif file_type == 'tex':
@@ -156,12 +163,12 @@ def make_boxplots(input_dir, output_dir, black_list, key_whitelist):
         make_boxplot(instance, results_dict[instance], output_dir)
 
 
-def make_history_plots(directory, black_list):
+def make_history_plots(input_dir, output_dir, black_list, key_whitelist):
     loader = Loader()
     loader.n_snapshots = 100
-    attributes = ['best_fitness_hist']
-    for instance, instance_dict in loader.lazy_load(directory, attributes, 4, black_list):
-        plot_avg_history(instance, instance_dict, attributes)
+    attributes = ['best_fitness_hist', 'reward_hist']
+    for instance, instance_dict in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist):
+        plot_avg_history(instance, instance_dict, attributes, output_dir)
 
 
 def list_to_str(input_list):
@@ -184,12 +191,11 @@ def make_hypothesis_test(input_dir, output_dir, problem_name, black_list, key_wh
     control = None
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
-    correct = 'finner'
-    control = 'DQN'
-    stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
-            correct=correct, control=control)
-    save_configs_performance(f'{problem_name}_configs_performance', results_dict, performance_dict,
-            problem_name, 'tex')
+    # correct = 'finner'
+    # control = 'DQN'
+    # stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
+    #         correct=correct, control=control)
+    save_configs_performance(f'{output_dir}/{problem_name}_configs_performance', results_dict, performance_dict, problem_name, 'csv')
 
 
 def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir, n_phases=10):
@@ -229,11 +235,12 @@ def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, outp
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
 
+
 def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist):
     loader = Loader()
     # loader.n_snapshots = 100
     attributes = ['heuristic_hist']
-    with open(f'problems_json/{problem}.json', 'r') as json_file:
+    with open(f'hyflex/problems_json/{problem}.json', 'r') as json_file:
         problem_dict = json.load(json_file)
     heuristic_names = problem_dict['actions']
     for instance, instance_dict in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
@@ -243,19 +250,21 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
 
 
 def main():
-    input_dir = 'HHRL_new_UCB/'
-    output_root = 'plots_new_UCB'
-    key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
+    input_dir = 'result_data/'
+    output_root = 'ssci_plots'
+    # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
+    key_whitelist = ['DQN', 'IND', 'IOD', 'DIV', 'IR']
     # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
-    problems = ['BP']
-    ignore_configs = ['EV', 'rank_decay_05']
-    ignore_configs += ['FS', 'PS', 'SAT', 'TSP', 'VRP']
+    problems = ['FS', 'SAT', 'TSP']
+    ignore_configs = ['EV', 'rank_decay_05', 'DMAB', 'FRRMAB']
+    ignore_configs += ['PS', 'BP', 'VRP']
     for problem in problems:
         black_list = problems + ignore_configs
         black_list.remove(problem)
         output_dir = f'{output_root}/{problem}'
         # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
+        make_history_plots(input_dir, output_dir, black_list, key_whitelist)
+        # make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
         # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
     # black_list = ignore_configs
     # output_dir = f'{output_root}/ALL'
