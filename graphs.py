@@ -250,14 +250,14 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
 
 
 def main():
-    input_dir = 'result_data/'
-    output_root = 'ssci_plots'
+    input_dir = 'results_data_HHRL//'
+    output_root = 'new_ssci_plots'
     # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
-    key_whitelist = ['DQN', 'IND', 'IOD', 'DIV', 'IR']
+    key_whitelist = ['DQN', 'IND', 'IOD', 'RAND', 'DIV', 'IR']
     # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
-    problems = ['FS', 'SAT', 'TSP']
+    problems = ['TSP']
     ignore_configs = ['EV', 'rank_decay_05', 'DMAB', 'FRRMAB']
-    ignore_configs += ['PS', 'BP', 'VRP']
+    ignore_configs += ['FS', 'SAT', 'PS', 'BP', 'VRP']
     for problem in problems:
         black_list = problems + ignore_configs
         black_list.remove(problem)

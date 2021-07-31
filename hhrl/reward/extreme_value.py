@@ -3,7 +3,7 @@ from hhrl.util.fifo_list import FIFOList
 
 class ExtremeValue:
     def __init__(self, config, actions, normalize=False, *args):
-        self.window_size = config['ExtremeValue'].getint('window_size', 20)
+        self.window_size = config['Reward'].getint('window_size', 20)
         self.normalize = normalize
         self.actions = actions
         self.n_actions = len(actions)

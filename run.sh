@@ -18,10 +18,10 @@ configs=(
 problems=(
 	TSP
 	FS
+	VRP
+	PS
+	BP
 	SAT
-	# VRP
-	# BP
-	# PS
 	)
 
 agents=(
@@ -32,10 +32,11 @@ agents=(
 	)
 
 rewards=(
-	IR
-	DIV
-	IND
-	IOD
+	# IR
+	# DIV
+	# IND
+	# IOD
+	IOP
 	)
 
 acceptances=(

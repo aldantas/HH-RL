@@ -16,7 +16,6 @@ class HyperHeuristic:
     def run(self, time_limit=3):
         self.problem.initialise_solution()
         current_fitness = self.problem.get_fitness()
-        solution = self.problem.get_solution()
         iterations = 0
         stats = StatsInfo(current_fitness)
         stats.push_fitness(current_fitness, current_fitness)
@@ -24,9 +23,9 @@ class HyperHeuristic:
         while self.__elapsed_time() < time_limit:
             llh = self.agent.select()
             fitness = self.problem.apply_heuristic(llh)
-            solution = self.problem.get_solution()
+            # solution = self.problem.get_solution()
             delta = current_fitness - fitness
-            reward = self.credit_assignment.get_reward(llh, fitness, current_fitness, solution)
+            reward = self.credit_assignment.get_reward(llh, fitness, current_fitness)
             if self.acceptance.is_solution_accepted(delta):
                 self.problem.accept_solution()
                 current_fitness = fitness
