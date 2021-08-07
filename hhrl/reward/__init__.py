@@ -4,3 +4,5 @@ from .diversity import Diversity
 from .improvement_n_diversity import ImprovementAndDiversity
 from .improvement_or_diversity import ImprovementOrDiversity
 from .improvement_or_penalty import ImprovementOrPenalty
+from .raw_improvement import RawImprovementPenalty
+from .discrete_improvement_penalty import DiscreteImprovementPenalty

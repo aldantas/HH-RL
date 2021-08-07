@@ -1,6 +1,7 @@
 import configparser
 import argparse
-import pathlib import random
+import pathlib
+import random
 from hhrl.agent import RandomAgent
 from hhrl.agent.mab import DMABAgent, FRRMABAgent
 from hhrl.agent.rl import DQNAgent
@@ -26,6 +27,8 @@ reward_dict = {
         'IND': ImprovementAndDiversity,
         'IOD': ImprovementOrDiversity,
         'IOP': ImprovementOrPenalty,
+        'RIP': RawImprovementPenalty,
+        'DIP': DiscreteImprovementPenalty,
         }
 
 
@@ -79,7 +82,7 @@ def parse_args(desc=''):
     parser.add_argument('-r', '--run_id', type=int, default=0)
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQN')
-    parser.add_argument('-rw', '--reward', type=str, default='IOP')
+    parser.add_argument('-rw', '--reward', type=str, default='DIP')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()

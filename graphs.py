@@ -251,20 +251,21 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
 
 def main():
     input_dir = 'results_data_HHRL//'
-    output_root = 'new_ssci_plots'
+    output_root = 'ssci_plots'
     # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
-    key_whitelist = ['DQN', 'IND', 'IOD', 'RAND', 'DIV', 'IR']
+    key_whitelist = ['DQN', 'IOP', 'IR']
     # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
-    problems = ['TSP']
-    ignore_configs = ['EV', 'rank_decay_05', 'DMAB', 'FRRMAB']
-    ignore_configs += ['FS', 'SAT', 'PS', 'BP', 'VRP']
+    problems = ['FS']
+    ignore_configs = ['EV', 'rank_decay_05', 'IND', 'IOD', 'DIV',
+            'RAND', 'PS', 'BP', 'VRP', 'TSP', 'SAT', 'FRRMAB', 'DMAB']
+    # ignore_configs += ['FS', 'SAT', 'PS', 'BP', 'VRP']
     for problem in problems:
         black_list = problems + ignore_configs
         black_list.remove(problem)
         output_dir = f'{output_root}/{problem}'
         # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        make_history_plots(input_dir, output_dir, black_list, key_whitelist)
-        # make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
+        # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
+        make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
         # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
     # black_list = ignore_configs
     # output_dir = f'{output_root}/ALL'

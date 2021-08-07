@@ -36,7 +36,9 @@ rewards=(
 	# DIV
 	# IND
 	# IOD
-	IOP
+	# IOP
+	RIP
+	DIP
 	)
 
 acceptances=(
@@ -52,8 +54,9 @@ run() {
 	acceptance=$6
 	id=$7
 	output_dir="/mnt/NAS/aldantas/HHRL"
-	python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
+	# python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
+	echo python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
 }
 
 export -f run
-eval 'parallel --jobs 10 --progress -u run ::: "${problems[@]}" ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}"  ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'
+eval 'parallel --jobs 1 --progress -u run ::: "${problems[@]}" ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}"  ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'
