@@ -7,7 +7,7 @@ This is an ongoing project as part of my PhD research, where I am developing Rei
 * Fitness-Rate-Rank Multi Armed Bandit
 
 # Combinatorial Problem Domains
-The domains comes from the [HyFlex Framework](http://www.asap.cs.nott.ac.uk/external/chesc2011/hyflex_description.html):
+The domains come from the [HyFlex Framework](http://www.asap.cs.nott.ac.uk/external/chesc2011/hyflex_description.html):
 * Bin Packing
 * MAX-SAT
 * Personnel Scheduling
