@@ -1,5 +1,5 @@
 # Hyper-Heuristic with Reinforcement Learning
-This is an ongoing project as part of my PhD research, where I am developing Reinforcement Learning agents for selecting low-level heuristics applied on combinatorial optimization problems.
+This is an ongoing project as part of my PhD research, where I am implementing Reinforcement Learning agents for selecting low-level heuristics applied on combinatorial optimization problems.
 
 # Implemented agents
 * Deep Q-Network
