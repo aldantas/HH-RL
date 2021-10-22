@@ -15,6 +15,6 @@ class SlidingWindowState:
             self.sliding_window.sum_list, self.sliding_window.count_list)]
         return [(float(x)-min(state))/(max(state)-min(state)+1e-16) for x in state]
 
-    def update(self, action, reward):
+    def update(self, action, reward, *args):
         action_idx = self.actions.index(action)
         self.sliding_window.update(action_idx, reward)

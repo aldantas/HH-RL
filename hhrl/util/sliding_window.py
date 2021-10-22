@@ -18,8 +18,8 @@ class SlidingWindow:
         # Insert new action reward
         self.count_list[idx] += 1
         self.sum_list[idx] += reward
-        expired = self.sliding_window.append((idx, reward))
+        expired = self.sliding_window.push((idx, reward))
         # Remove expiring action rewards
-        for idx, reward in expired:
+        if expired != None:
             self.count_list[idx] -= 1
             self.sum_list[idx] -= reward

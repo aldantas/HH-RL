@@ -15,5 +15,7 @@ class MAXSAT(HyFlexDomain):
     def get_solution(self, idx=0):
         solution_str = self.problem.solutionToString(idx)
         solution_list = solution_str.strip().split()
-        bool_list = [self.str_to_bool(x.split(':')[1]) for x in solution_list]
-        return BooleanSolution(bool_list)
+        bool_tuple = tuple((self.str_to_bool(x.split(':')[1]) for x in solution_list))
+        fitness = self.get_fitness(idx)
+        id = next(self.solution_indexer)
+        return BooleanSolution(id, bool_tuple, fitness)

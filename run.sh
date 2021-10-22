@@ -18,10 +18,10 @@ configs=(
 problems=(
 	TSP
 	FS
-	VRP
-	PS
-	BP
 	SAT
+	# VRP
+	# PS
+	# BP
 	)
 
 agents=(
@@ -31,6 +31,11 @@ agents=(
 	# RAND
 	)
 
+states=(
+	SW
+	BOLLP
+	)
+
 rewards=(
 	# IR
 	# DIV
@@ -38,7 +43,7 @@ rewards=(
 	# IOD
 	# IOP
 	RIP
-	DIP
+	# DIP
 	)
 
 acceptances=(
@@ -50,13 +55,13 @@ run() {
 	instance=$2
 	config=$3
 	agent=$4
-	reward=$5
-	acceptance=$6
-	id=$7
-	output_dir="/mnt/NAS/aldantas/HHRL"
-	# python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
-	echo python runner.py -p $problem -i $instance -c $config -ag $agent -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
+	state=$5
+	reward=$6
+	acceptance=$7
+	id=$8
+	output_dir="/mnt/NAS/aldantas/HHRL_states"
+	python runner.py -p $problem -i $instance -c $config -ag $agent -st $state -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
 }
 
 export -f run
-eval 'parallel --jobs 1 --progress -u run ::: "${problems[@]}" ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}"  ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'
+eval 'parallel --jobs 10 --progress -u run ::: "${problems[@]}" ::: "${instances[@]}" ::: "${configs[@]}"  ::: "${agents[@]}" ::: "${states[@]}" ::: "${rewards[@]}"  ::: "${acceptances[@]}" ::: {1..31}'

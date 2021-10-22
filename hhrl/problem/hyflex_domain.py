@@ -1,11 +1,15 @@
 import jnius_config
 jnius_config.set_classpath('.', 'hyflex/*')
 from jnius import autoclass
+from itertools import count
 import json
 from hhrl.solution import Solution
 
 
 class HyFlexDomain():
+
+    solution_indexer = count(1)
+
     def __init__(self, problem_str, instance_id, seed):
         with open(f'hyflex/problems_json/{problem_str}.json', 'r') as json_file:
             self.problem_dict = json.load(json_file)

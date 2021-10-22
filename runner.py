@@ -7,6 +7,7 @@ from hhrl.agent.mab import DMABAgent, FRRMABAgent
 from hhrl.agent.rl import DQNAgent
 from hhrl.reward import *
 from hhrl.state import SlidingWindowState
+from hhrl.state.landscape import BoLLP
 from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
 from hhrl.problem import *
@@ -31,9 +32,12 @@ reward_dict = {
         'DIP': DiscreteImprovementPenalty,
         }
 
+state_dict = {
+        'SW': SlidingWindowState,
+        'BOLPP': BoLLP,
+        }
 
-acceptance_dict = {
-        'ALL': AcceptAll,
+acceptance_dict = { 'ALL': AcceptAll,
         }
 
 
@@ -61,7 +65,7 @@ def main(args):
     if (path / f'{args.run_id}.dat').exists() and not args.overwrite:
         return
     actions = problem.actions
-    state_env = SlidingWindowState(config, actions)
+    state_env = state_dict[args.state](config, actions)
     agent = agent_dict[args.agent](config, actions, state_env=state_env)
     reward = reward_dict[args.reward](config, actions)
     acceptance = acceptance_dict[args.acceptance]()
@@ -70,12 +74,11 @@ def main(args):
     stats.run_id = args.run_id
     path.mkdir(parents=True, exist_ok=True)
     stats.save(path)
-    print(stats)
 
 
 def parse_args(desc=''):
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-p', '--problem', type=str, default='VRP')
+    parser.add_argument('-p', '--problem', type=str, default='TSP')
     parser.add_argument('-c', '--config', type=str, default='configs/default-config.ini')
     parser.add_argument('-o', '--output_dir', type=str, default='tmp')
     parser.add_argument('-i', '--instance_id', type=int, default=0)
@@ -83,6 +86,7 @@ def parse_args(desc=''):
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQN')
     parser.add_argument('-rw', '--reward', type=str, default='DIP')
+    parser.add_argument('-st', '--state', type=str, default='BOLPP')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()

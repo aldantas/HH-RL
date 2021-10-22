@@ -9,5 +9,7 @@ class TravelingSalesman(HyFlexDomain):
     def get_solution(self, idx=0):
         solution_str = self.problem.solutionToString(idx)
         solution_str = solution_str.split('\n')[1].strip()
-        permutation = [int(x) for x in solution_str.split(' ')]
-        return PermutationSolution(permutation)
+        permutation = tuple((int(x) for x in solution_str.split(' ')))
+        fitness = self.get_fitness(idx)
+        id = next(self.solution_indexer)
+        return PermutationSolution(id, permutation, fitness)

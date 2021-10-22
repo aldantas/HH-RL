@@ -39,9 +39,9 @@ class DQNAgent:
         action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
-    def update(self, action, reward):
+    def update(self, action, reward, solution):
         action_idx = self.actions.index(action)
-        self.state_env.update(action, reward)
+        self.state_env.update(action, reward, solution)
         next_state = self.state_env.get_state()
 
         next_qvalues = self.__get_qvalues(next_state)
