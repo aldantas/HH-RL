@@ -16,7 +16,10 @@ class HyFlexDomain():
         ProblemClass = autoclass(self.problem_dict['class'])
         self.problem = ProblemClass(seed)
         self.problem.loadInstance(instance_id)
-        self.instance_name = self.problem_dict['instances'][str(instance_id)]
+        try:
+            self.instance_name = self.problem_dict['instances'][str(instance_id)]
+        except KeyError:
+            self.instance_name = f'id_{instance_id}'
         self.actions = self.problem_dict['actions']
 
     def initialise_solution(self, idx=0):

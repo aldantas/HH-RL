@@ -21,7 +21,7 @@ class RandomAgent:
         action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
-    def update(self, action, reward):
+    def update(self, action, reward, *args):
         pass
 
 

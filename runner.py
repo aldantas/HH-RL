@@ -53,7 +53,7 @@ domain_dict = {
 
 def output_path(args, config, instance_name, rootdir=''):
     config_name = args.config.split('/')[-1].split('.')[0]
-    return pathlib.Path(f'{rootdir}/{args.problem}/{instance_name}/{args.agent}/{args.reward}/{args.acceptance}/{config_name}')
+    return pathlib.Path(f'{rootdir}/{args.problem}/{instance_name}/{args.agent}/{args.state}/{args.reward}/{args.acceptance}/{config_name}')
 
 
 def main(args):
@@ -78,10 +78,10 @@ def main(args):
 
 def parse_args(desc=''):
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-p', '--problem', type=str, default='TSP')
+    parser.add_argument('-p', '--problem', type=str, default='FS')
     parser.add_argument('-c', '--config', type=str, default='configs/default-config.ini')
     parser.add_argument('-o', '--output_dir', type=str, default='tmp')
-    parser.add_argument('-i', '--instance_id', type=int, default=0)
+    parser.add_argument('-i', '--instance_id', type=int, default=10)
     parser.add_argument('-r', '--run_id', type=int, default=0)
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQN')

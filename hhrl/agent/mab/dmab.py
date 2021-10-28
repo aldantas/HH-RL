@@ -28,7 +28,7 @@ class DMABAgent:
         action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
-    def update(self, action, reward):
+    def update(self, action, reward, *args):
         self.ph.add_element(reward)
         if self.ph.detected_change():
             self.p += 1

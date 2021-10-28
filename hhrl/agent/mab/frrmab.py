@@ -30,7 +30,7 @@ class FRRMABAgent:
         action_idx = self.policy.select(self)
         return self.actions[action_idx]
 
-    def update(self, action, reward):
+    def update(self, action, reward, *args):
         self.t += 1
         action_idx = self.actions.index(action)
         self.sliding_window.update(action_idx, reward)
