@@ -1,17 +1,17 @@
 from hhrl.util.page_hinkley import PageHinkley
+from hhrl.agent import Agent
 from .ucb import UCBPolicy
 
 
-class DMABAgent:
+class DMABAgent(Agent):
     def __init__(self, config, actions, prior=[], **kwargs):
-        self.policy = UCBPolicy(config)
+        super().__init__(actions, UCBPolicy(config))
         self.prior = prior
         n_actions = len(actions)
         if len(prior) != n_actions:
             self.prior = [.0] * n_actions
         self.value_estimates = self.prior
         self.action_attempts = [0] * n_actions
-        self.actions = actions
         self.t = 0
         self.ph = PageHinkley(config)
         self.n, self.p = 0, 0
@@ -23,10 +23,6 @@ class DMABAgent:
         self.value_estimates = self.prior
         self.action_attempts = [0] * len(self.actions)
         self.t = 0
-
-    def select(self):
-        action_idx = self.policy.select(self)
-        return self.actions[action_idx]
 
     def update(self, action, reward, *args):
         self.ph.add_element(reward)

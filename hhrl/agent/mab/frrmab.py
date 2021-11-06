@@ -1,11 +1,12 @@
 import numpy as np
 from hhrl.util import SlidingWindow
+from hhrl.agent import Agent
 from .ucb import UCBPolicy
 
 
-class FRRMABAgent:
+class FRRMABAgent(Agent):
     def __init__(self, config, actions, prior=[], **kwargs):
-        self.policy = UCBPolicy(config)
+        super().__init__(actions, UCBPolicy(config))
         self.prior = prior
         n_actions = len(actions)
         if len(prior) != n_actions:
@@ -15,7 +16,6 @@ class FRRMABAgent:
         window_size = config['FRRMABAgent'].getint('window_size', 100)
         self.sliding_window = SlidingWindow(window_size, n_actions)
         self.action_attempts = self.sliding_window.count_list
-        self.actions = actions
         self.t = 0
 
     def __str__(self):
@@ -25,10 +25,6 @@ class FRRMABAgent:
         self.value_estimates = self.prior
         self.sliding_window.clear()
         self.t = 0
-
-    def select(self):
-        action_idx = self.policy.select(self)
-        return self.actions[action_idx]
 
     def update(self, action, reward, *args):
         self.t += 1

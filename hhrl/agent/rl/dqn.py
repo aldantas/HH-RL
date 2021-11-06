@@ -1,13 +1,13 @@
 import numpy as np
 from sklearn.neural_network import MLPRegressor
 from sklearn.exceptions import NotFittedError
+from hhrl.agent import Agent
 from .egreedy import EpsilonGreedyPolicy
 
 
-class DQNAgent:
+class DQNAgent(Agent):
     def __init__(self, config, actions, state_env, prior=[], **kwargs):
-        self.policy = EpsilonGreedyPolicy(config)
-        self.actions = actions
+        super().__init__(actions, EpsilonGreedyPolicy(config))
         self.prior = prior
         self.gamma = config['DQNAgent'].getfloat('gamma', .9)
         n_actions = len(actions)
@@ -35,9 +35,8 @@ class DQNAgent:
         except NotFittedError:
             return [0] * len(self.actions)
 
-    def select(self):
-        action_idx = self.policy.select(self)
-        return self.actions[action_idx]
+    def get_env_state(self):
+        return self.state
 
     def update(self, action, reward, solution):
         action_idx = self.actions.index(action)

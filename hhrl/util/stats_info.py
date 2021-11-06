@@ -15,13 +15,16 @@ class StatsInfo:
         self.initial_fitness = initial_fitness
         self.best_fitness = None
         self.iterations = 0
+        self.state_hist = []
 
     def __str__(self):
         return str(self.best_fitness)
 
-    def push_heuristic(self, heuristic, reward):
+    def push_heuristic(self, heuristic, reward, state=None):
         self.heuristic_hist.append(heuristic)
         self.reward_hist.append(reward)
+        if state:
+            self.state_hist.append(state)
 
     def push_fitness(self, current, best):
         self.fitness_hist.append(current)

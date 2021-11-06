@@ -9,8 +9,8 @@ instances=(
 	7
 	8
 	9
-	10
-	11
+	# 10
+	# 11
 )
 
 configs=(
@@ -20,22 +20,23 @@ configs=(
 problems=(
 	TSP
 	FS
-	SAT
+	# SAT
 	# VRP
 	# PS
 	# BP
 	)
 
 agents=(
-	DQN
+	# DQN
 	# DMAB
 	# FRRMAB
-	# RAND
+	RAND
 	)
 
 states=(
-	SW
-	BOLLP
+	# SW
+	# BOLLP
+	CUSTOM
 	)
 
 rewards=(
@@ -61,7 +62,7 @@ run() {
 	reward=$6
 	acceptance=$7
 	id=$8
-	output_dir="/mnt/NAS/aldantas/HHRL_states"
+	output_dir="/mnt/NAS/aldantas/results_data_HHRL_states"
 	python runner.py -p $problem -i $instance -c $config -ag $agent -st $state -rw $reward -ac $acceptance -r $id -t 300 -o $output_dir
 }
 
