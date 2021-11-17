@@ -15,6 +15,7 @@ instances=(
 
 configs=(
 	configs/default-config.ini
+	configs/fir_discrete.ini
 	)
 
 problems=(
@@ -27,16 +28,17 @@ problems=(
 	)
 
 agents=(
-	# DQN
+	DQN
+	DQNUCB
 	# DMAB
 	# FRRMAB
-	RAND
+	# RAND
 	)
 
 states=(
 	# SW
 	# BOLLP
-	CUSTOM
+	S1
 	)
 
 rewards=(

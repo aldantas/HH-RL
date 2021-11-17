@@ -1,6 +1,7 @@
 from hhrl.solution import Solution
 import numpy as np
 
+
 class PermutationSolution(Solution):
     def __init__(self, id=0, permutation=[], fitness=float('inf')):
         super().__init__(id, fitness)

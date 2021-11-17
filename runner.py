@@ -4,33 +4,30 @@ import pathlib
 import random
 from hhrl.agent import RandomAgent
 from hhrl.agent.mab import DMABAgent, FRRMABAgent
-from hhrl.agent.rl import DQNAgent
+from hhrl.agent.rl import DQNAgent, DQNUCBAgent
 from hhrl.reward import *
-from hhrl.state import SlidingWindowState
+from hhrl.state import *
 from hhrl.state.landscape import *
 from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
 from hhrl.problem import *
 
 
-class CustomState:
-    def __init__(self, config, *args):
-        self.fdc = FitnessDistanceCorrelation(config)
-        self.dispersion = DispersionMetric(config)
+class State1():
+    def __init__(self, config, **kwargs):
+        self.fir = FitnessImprovementRate(config, **kwargs)
+        self.la_vec = LastActionVector(config, **kwargs)
 
     def reset(self):
-        self.fdc.reset()
-        self.dispersion.reset()
+        self.fir.reset()
+        self.la_vec.reset()
 
     def get_state(self):
-        state_vector = []
-        state_vector.extend(self.fdc.get_state())
-        state_vector.extend(self.dispersion.get_state())
-        return state_vector
+        return self.fir.get_state() + self.la_vec.get_state()
 
     def update(self, action, reward, solution):
-        self.fdc.update(action, reward, solution)
-        self.dispersion.update(action, reward, solution)
+        self.fir.update(action, reward, solution)
+        self.la_vec.update(action, reward, solution)
 
 
 agent_dict = {
@@ -38,6 +35,7 @@ agent_dict = {
         'DMAB': DMABAgent,
         'FRRMAB': FRRMABAgent,
         'RAND': RandomAgent,
+        'DQNUCB': DQNUCBAgent,
         }
 
 
@@ -57,10 +55,11 @@ state_dict = {
         'BOLLP': BoLLP,
         'FDC': FitnessDistanceCorrelation,
         'DISP': DispersionMetric,
-        'CUSTOM': CustomState,
+        'S1': State1,
         }
 
-acceptance_dict = { 'ALL': AcceptAll,
+acceptance_dict = {
+    'ALL': AcceptAll,
         }
 
 
@@ -88,7 +87,7 @@ def main(args):
     if (path / f'{args.run_id}.dat').exists() and not args.overwrite:
         return
     actions = problem.actions
-    state_env = state_dict[args.state](config, actions)
+    state_env = state_dict[args.state](config, actions=actions)
     agent = agent_dict[args.agent](config, actions, state_env=state_env)
     reward = reward_dict[args.reward](config, actions)
     acceptance = acceptance_dict[args.acceptance]()
@@ -107,9 +106,9 @@ def parse_args(desc=''):
     parser.add_argument('-i', '--instance_id', type=int, default=1)
     parser.add_argument('-r', '--run_id', type=int, default=0)
     parser.add_argument('-t', '--time_limit', type=int, default=3)
-    parser.add_argument('-ag', '--agent', type=str, default='RAND')
+    parser.add_argument('-ag', '--agent', type=str, default='DQNUCB')
     parser.add_argument('-rw', '--reward', type=str, default='RIP')
-    parser.add_argument('-st', '--state', type=str, default='CUSTOM')
+    parser.add_argument('-st', '--state', type=str, default='S1')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()

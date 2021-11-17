@@ -4,7 +4,7 @@ from hhrl.util import SolutionSpace
 
 
 class DispersionMetric:
-    def __init__(self, config, *args):
+    def __init__(self, config, **kwargs):
         self.sample_size = config['Dispersion'].getint('sample_size', 100)
         self.elite_sample_size = config['Dispersion'].getint('elite_sample_size', 10)
         self.sample_space = SolutionSpace(self.sample_size)

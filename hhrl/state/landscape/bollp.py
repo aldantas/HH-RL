@@ -2,7 +2,7 @@ from hhrl.util import SolutionSpace
 
 
 class BoLLP():
-    def __init__(self, config, *args):
+    def __init__(self, config, **kwargs):
         self.sample_size = config['BoLLP'].getint('sample_size', 100)
         self.neighborhood_size = config['BoLLP'].getint('neighborhood_size', 3)
         self.sample_space = SolutionSpace(self.sample_size)
