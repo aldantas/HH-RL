@@ -150,7 +150,7 @@ class StatTests:
             else:
                 algs_performance_dict[best_alg]['better'].append(instance)
         if filename:
-            self.plot_performance_bars(algs_performance_dict, filename, 'Instance Performance (Kruskal Dunn)')
+            self.plot_performance_bars(algs_performance_dict, filename, 'Instance Performance')
         return algs_performance_dict
 
     def __label_bar(self, bar, color, offset=0):
@@ -165,9 +165,18 @@ class StatTests:
         better_count = []
         equivalent_count = []
         for alg in performance_dict:
-            labels.append(alg)
+            if alg == 'DQN-RIP':
+                label = r'$R_{1}$'
+            elif alg == 'DQN-IR':
+                label = r'$R_{2}$'
+            else:
+                label = alg
+            labels.append(label)
             better_count.append(len(performance_dict[alg]['better']))
             equivalent_count.append(len(performance_dict[alg]['equivalent']))
+        labels.reverse()
+        better_count.reverse()
+        equivalent_count.reverse()
         width = .8
         plt.figure()
         bottom_bars = plt.bar(labels, better_count, width, label='Better', color='black')

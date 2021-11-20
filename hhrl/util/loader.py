@@ -14,7 +14,7 @@ class Loader:
         if self.n_snapshots > len(full_trace):
             print(f'Number of snapshots {self.n_snapshots} is higher than the trace length {len(full_trace)}')
             return full_trace
-        snapshots = [full_trace[i] for i in np.linspace(0, len(full_trace)-1, self.n_snapshots, dtype=int)]
+        snapshots = [full_trace[i] for i in np.linspace(0, len(full_trace) - 1, self.n_snapshots, dtype=int)]
         return snapshots
 
     def read_file_attrs(self, file_path, load_attrs):
@@ -29,14 +29,31 @@ class Loader:
                 attr = self.get_snapshots(attr)
             yield attr_str, attr
 
-    def get_paths_dict(self, directory, split_depth):
+    def _allow_instance_path(self, path, instance_list):
+        if not instance_list:
+            return True
+        return any([
+            True if instance in path.parts else False for instance in instance_list
+        ])
+
+    def _allow_config_path(self, path, config_list):
+        return any([
+            all([
+                True if config_key in path.parts else False for config_key in config_tuple
+            ]) for config_tuple in config_list
+        ])
+
+    def get_paths_dict(self, root_dir, instance_list, config_list, split_depth):
         paths_dict = {}
-        for root, dirs, files in os.walk(directory):
+        for root, dirs, files in os.walk(root_dir):
             if not dirs:
                 path = pathlib.Path(root)
                 instance_path = pathlib.Path(*path.parts[:-split_depth])
+                if not self._allow_instance_path(instance_path, instance_list):
+                    continue
                 config_path = pathlib.Path(*path.parts[-split_depth:])
-                paths_dict.setdefault(instance_path,[]).append(config_path)
+                if self._allow_config_path(config_path, config_list):
+                    paths_dict.setdefault(instance_path, []).append(config_path)
         return paths_dict
 
     def __is_black_listed(self, path, black_list):
@@ -55,7 +72,7 @@ class Loader:
         return str_key.lstrip('-')
 
     def lazy_load(self, directory, attributes, split_depth=1, black_list=[], key_whitelist=None,
-            use_attr_list=False):
+                  use_attr_list=False):
         paths_dict = self.get_paths_dict(directory, split_depth)
         for instance_path in tqdm(paths_dict):
             if self.__is_black_listed(instance_path, black_list):
@@ -66,7 +83,7 @@ class Loader:
                 if self.__is_black_listed(config_path, black_list):
                     continue
                 path = instance_path / config_path
-                #TODO: parameterize the config_key slicing
+                # TODO: parameterize the config_key slicing
                 # config_key = self.__tuple_to_str_key(config_path.parts[:2])
                 config_key = self.__tuple_to_str_key(config_path.parts, key_whitelist)
                 if use_attr_list:
@@ -74,17 +91,51 @@ class Loader:
                 else:
                     instance_dict[config_key] = {}
                 for file in tqdm(os.listdir(path), leave=False):
-                    for attr_str, attr_value in self.read_file_attrs(path/file, attributes):
+                    for attr_str, attr_value in self.read_file_attrs(path / file, attributes):
                         if use_attr_list:
                             instance_dict[config_key].append(attr_value)
                         else:
-                            instance_dict[config_key].setdefault(attr_str,[]).append(attr_value)
+                            instance_dict[config_key].setdefault(attr_str, []).append(attr_value)
+            yield instance_key, instance_dict
+
+    def lazy_load_instances(self, root_dir, config_list, attribute_list, instance_list, split_depth=1, use_attr_list=False):
+        paths_dict = self.get_paths_dict(root_dir, instance_list, config_list, split_depth)
+        for instance_path in tqdm(paths_dict):
+            instance_key = self.__tuple_to_str_key(instance_path.parts[1:])
+            instance_dict = {}
+            for config_path in tqdm(paths_dict[instance_path], leave=False):
+                path = instance_path / config_path
+                # TODO: parameterize the config_key slicing
+                # config_key = self.__tuple_to_str_key(config_path.parts[:2])
+                config_key = self.__tuple_to_str_key(config_path.parts)
+                if use_attr_list:
+                    instance_dict[config_key] = []
+                else:
+                    instance_dict[config_key] = {}
+                for file in tqdm(os.listdir(path), leave=False):
+                    for attr_str, attr_value in self.read_file_attrs(path / file, attribute_list):
+                        if use_attr_list:
+                            instance_dict[config_key].append(attr_value)
+                        else:
+                            instance_dict[config_key].setdefault(attr_str, []).append(attr_value)
             yield instance_key, instance_dict
 
     def load(self, directory, attributes, split_depth=1, black_list=[], key_whitelist=None,
-            use_attr_list=False):
+             use_attr_list=False):
         results_dict = {}
         for instance_key, instance_dict in self.lazy_load(
                 directory, attributes, split_depth, black_list, key_whitelist, use_attr_list):
             results_dict[instance_key] = instance_dict
         return results_dict
+
+    def load_problems(self, root_dir, problem_list, config_list, attribute_list, instance_list=None, split_depth=1, use_attr_list=False):
+        results_dict = {}
+        for problem in problem_list:
+            problem_dir = f'{root_dir}/{problem}'
+            problem_dict = {}
+            for instance_key, instance_dict in self.lazy_load_instances(
+                    problem_dir, config_list, attribute_list, instance_list, split_depth, use_attr_list):
+                if len(instance_dict.values()) != len(config_list):
+                    continue
+                problem_dict[instance_key] = instance_dict
+            yield problem, problem_dict
