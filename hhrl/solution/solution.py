@@ -1,7 +1,7 @@
 import copy
 
 
-class Solution():
+class Solution:
     def __init__(self, id, fitness):
         self.id = id
         self.fitness = fitness

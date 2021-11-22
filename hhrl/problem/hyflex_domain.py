@@ -6,7 +6,7 @@ import json
 from hhrl.solution import Solution
 
 
-class HyFlexDomain():
+class HyFlexDomain:
 
     solution_indexer = count(1)
 
@@ -38,4 +38,5 @@ class HyFlexDomain():
         return self.problem.getBestSolutionValue()
 
     def get_solution(self, idx=0):
-        return Solution()
+        id = next(self.solution_indexer)
+        return Solution(id, self.get_fitness(idx))
