@@ -4,7 +4,7 @@ from hhrl.util.fifo_list import FIFOList
 
 class FitnessDistanceCorrelation:
     def __init__(self, config, **kwargs):
-        self.sample_size = config['FDC'].getint('sample_size', 100)
+        self.sample_size = config['FDC'].getint('sample_size', 10)
         self.solution_list = FIFOList(self.sample_size)
         self.dist_list = FIFOList(self.sample_size)
         self.optima_list = []

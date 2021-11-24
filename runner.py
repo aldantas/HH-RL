@@ -12,23 +12,7 @@ from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
 from hhrl.problem import *
 
-
-class State1():
-    def __init__(self, config, **kwargs):
-        self.fir = FitnessImprovementRate(config, **kwargs)
-        self.la_vec = LastActionVector(config, **kwargs)
-
-    def reset(self):
-        self.fir.reset()
-        self.la_vec.reset()
-
-    def get_state(self):
-        return self.fir.get_state() + self.la_vec.get_state()
-
-    def update(self, action, reward, solution):
-        self.fir.update(action, reward, solution)
-        self.la_vec.update(action, reward, solution)
-
+from custom_states import *
 
 agent_dict = {
         'DQN': DQNAgent,
@@ -55,8 +39,9 @@ state_dict = {
         'BOLLP': BoLLP,
         'FDC': FitnessDistanceCorrelation,
         'DISP': DispersionMetric,
-        'S1': State1,
         }
+state_dict |= custom_state_dict
+
 
 acceptance_dict = {
     'ALL': AcceptAll,
@@ -96,6 +81,7 @@ def main(args):
     stats.run_id = args.run_id
     path.mkdir(parents=True, exist_ok=True)
     stats.save(path)
+    print(stats)
 
 
 def parse_args(desc=''):
@@ -108,7 +94,7 @@ def parse_args(desc=''):
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQNUCB')
     parser.add_argument('-rw', '--reward', type=str, default='RIP')
-    parser.add_argument('-st', '--state', type=str, default='S1')
+    parser.add_argument('-st', '--state', type=str, default='S2')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()
