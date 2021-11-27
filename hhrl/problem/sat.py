@@ -1,5 +1,5 @@
 from hhrl.problem import HyFlexDomain
-from hhrl.solution import BooleanSolution
+from hhrl.solution import ListSolution
 
 
 class MAXSAT(HyFlexDomain):
@@ -18,4 +18,4 @@ class MAXSAT(HyFlexDomain):
         bool_tuple = tuple((self.str_to_bool(x.split(':')[1]) for x in solution_list))
         fitness = self.get_fitness(idx)
         id = next(self.solution_indexer)
-        return BooleanSolution(id, bool_tuple, fitness)
+        return ListSolution(id, bool_tuple, fitness)

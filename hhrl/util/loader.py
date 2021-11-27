@@ -135,7 +135,7 @@ class Loader:
             problem_dict = {}
             for instance_key, instance_dict in self.lazy_load_instances(
                     problem_dir, config_list, attribute_list, instance_list, split_depth, use_attr_list):
-                if len(instance_dict.values()) != len(config_list):
+                if len(instance_dict.values()) < len(config_list):
                     continue
                 problem_dict[instance_key] = instance_dict
             yield problem, problem_dict

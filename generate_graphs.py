@@ -255,28 +255,40 @@ def print_avg_fitness(results_dict, problem):
             print(f'{config}: {np.mean(instance_results[config])}')
 
 
-def main():
+def main(experiments):
     input_dir='results_data_HHRL_states'
     output_root = 'states_plots_rip/'
+    # problem_list = ['TSP', 'FS', 'BP', 'SAT', 'VRP', 'PS']
     problem_list = ['TSP', 'FS']
     instance_list = None
-    config_list = [('DQN', 'S1', 'default-config'), ('DQN', 'SW')]
     attributes = ['best_fitness']
-    experiment_name = 'DQN-S1-SW'
     loader = Loader()
-    all_dict = {}
-    for problem, problem_dict in loader.load_problems(input_dir, problem_list, config_list, attributes,
-            instance_list=instance_list, split_depth=5, use_attr_list=True):
-        output_dir = f'{output_root}/{problem}'
-        make_hypothesis_test(problem_dict, output_dir, problem, experiment_name)
-        all_dict |= problem_dict
-        # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
-        # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
-    output_dir = f'{output_root}/ALL'
-    # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-    make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
+    for experiment_name, config_list in experiments.items():
+        all_dict = {}
+        try:
+            for problem, problem_dict in loader.load_problems(input_dir, problem_list, config_list, attributes,
+                    instance_list=instance_list, split_depth=5, use_attr_list=True):
+                output_dir = f'{output_root}/{problem}'
+                make_hypothesis_test(problem_dict, output_dir, problem, experiment_name)
+                all_dict |= problem_dict
+                # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+                # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
+                make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+            output_dir = f'{output_root}/ALL'
+            # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+            make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
+        except UnboundLocalError:
+            print(f'Error in{experiment_name}')
+            continue
 
 
 if __name__ == '__main__':
-    main()
+    experiments = {
+            # 'DQN-S1-configs': [('DQN', 'S1')],
+            # 'DQN-S1-SW': [('DQN', 'S1', 'default-config'), ('DQN', 'SW')],
+            # 'DQN-S1fir_discrete-SW': [('DQN', 'S1', 'fir_discrete'), ('DQN', 'SW')],
+            # 'DQN-S1-FRRMAB': [('DQN', 'S1', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
+            # 'DQN-S1firdiscrete-FRRMAB': [('DQN', 'S1', 'fir-discrete'), ('FRRMAB')],
+            'DQN-S1-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
+            }
+    main(experiments)

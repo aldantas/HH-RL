@@ -1,3 +1,2 @@
 from .solution import Solution
-from .permutation_solution import PermutationSolution
-from .boolean_solution import BooleanSolution
+from .list_solution import ListSolution

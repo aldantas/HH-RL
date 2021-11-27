@@ -1,5 +1,5 @@
 from hhrl.problem import HyFlexDomain
-from hhrl.solution import PermutationSolution
+from hhrl.solution import ListSolution
 
 
 class TravelingSalesman(HyFlexDomain):
@@ -12,4 +12,4 @@ class TravelingSalesman(HyFlexDomain):
         permutation = tuple((int(x) for x in solution_str.split(' ')))
         fitness = self.get_fitness(idx)
         id = next(self.solution_indexer)
-        return PermutationSolution(id, permutation, fitness)
+        return ListSolution(id, permutation, fitness)

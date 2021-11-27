@@ -2,9 +2,13 @@ import copy
 
 
 class Solution:
-    def __init__(self, id, fitness):
+    def __init__(self, id, solution, fitness):
         self.id = id
+        self.solution = solution
         self.fitness = fitness
+
+    def __len__(self):
+        return len(self.solution)
 
     def __eq__(self, other):
         return self.id == other.id
@@ -26,6 +30,9 @@ class Solution:
 
     def copy(self):
         return copy.deepcopy(self)
+
+    def compare(self, other):
+        return self.solution == other.solution
 
     def distance(self, other):
         return 0

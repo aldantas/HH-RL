@@ -38,5 +38,6 @@ class HyFlexDomain:
         return self.problem.getBestSolutionValue()
 
     def get_solution(self, idx=0):
+        solution_str = self.problem.solutionToString(idx)
         id = next(self.solution_indexer)
-        return Solution(id, self.get_fitness(idx))
+        return Solution(id, solution_str, self.get_fitness(idx))

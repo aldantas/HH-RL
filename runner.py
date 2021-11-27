@@ -2,6 +2,7 @@ import configparser
 import argparse
 import pathlib
 import random
+
 from hhrl.agent import RandomAgent
 from hhrl.agent.mab import DMABAgent, FRRMABAgent
 from hhrl.agent.rl import DQNAgent, DQNUCBAgent
@@ -13,6 +14,7 @@ from hhrl.hh import HyperHeuristic
 from hhrl.problem import *
 
 from custom_states import *
+
 
 agent_dict = {
         'DQN': DQNAgent,
@@ -40,7 +42,7 @@ state_dict = {
         'FDC': FitnessDistanceCorrelation,
         'DISP': DispersionMetric,
         }
-state_dict |= custom_state_dict
+state_dict.update(custom_state_dict)
 
 
 acceptance_dict = {
@@ -60,7 +62,11 @@ domain_dict = {
 
 def output_path(args, config, instance_name, rootdir=''):
     config_name = args.config.split('/')[-1].split('.')[0]
-    return pathlib.Path(f'{rootdir}/{args.problem}/{instance_name}/{args.agent}/{args.state}/{args.reward}/{args.acceptance}/{config_name}')
+    if 'MAB' in args.agent or args.agent == 'RAND':
+        state_dir = 'NONE'
+    else:
+        state_dir = args.agent
+    return pathlib.Path(f'{rootdir}/{args.problem}/{instance_name}/{args.agent}/{state_dir}/{args.reward}/{args.acceptance}/{config_name}')
 
 
 def main(args):
@@ -81,18 +87,17 @@ def main(args):
     stats.run_id = args.run_id
     path.mkdir(parents=True, exist_ok=True)
     stats.save(path)
-    print(stats)
 
 
 def parse_args(desc=''):
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-p', '--problem', type=str, default='TSP')
+    parser.add_argument('-p', '--problem', type=str, default='BP')
     parser.add_argument('-c', '--config', type=str, default='configs/default-config.ini')
     parser.add_argument('-o', '--output_dir', type=str, default='tmp')
     parser.add_argument('-i', '--instance_id', type=int, default=1)
     parser.add_argument('-r', '--run_id', type=int, default=0)
     parser.add_argument('-t', '--time_limit', type=int, default=3)
-    parser.add_argument('-ag', '--agent', type=str, default='DQNUCB')
+    parser.add_argument('-ag', '--agent', type=str, default='DQN')
     parser.add_argument('-rw', '--reward', type=str, default='RIP')
     parser.add_argument('-st', '--state', type=str, default='S2')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
