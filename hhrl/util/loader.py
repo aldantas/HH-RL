@@ -37,6 +37,8 @@ class Loader:
         ])
 
     def _allow_config_path(self, path, config_list):
+        if not config_list:
+            return True
         return any([
             all([
                 True if config_key in path.parts else False for config_key in config_tuple
@@ -127,6 +129,25 @@ class Loader:
                 directory, attributes, split_depth, black_list, key_whitelist, use_attr_list):
             results_dict[instance_key] = instance_dict
         return results_dict
+
+    def check_experiments(self, root_dir, split_depth=5):
+        experiemnts_dict = {}
+        for problem in os.listdir(root_dir):
+            print(problem)
+            problem_dir = f'{root_dir}/{problem}'
+            paths_dict = self.get_paths_dict(problem_dir, None, None, split_depth=split_depth)
+            experiemnts_dict[problem] = {}
+            problem_configs = []
+            for instance_path in paths_dict:
+                instance_dict = {}
+                for config_path in paths_dict[instance_path]:
+                    full_path = f'{instance_path}/{config_path}'
+                    count = len(os.listdir(full_path))
+                    problem_configs.append((full_path, count))
+            problem_configs.sort()
+            for config in problem_configs:
+                print(config)
+
 
     def load_problems(self, root_dir, problem_list, config_list, attribute_list, instance_list=None, split_depth=1, use_attr_list=False):
         results_dict = {}

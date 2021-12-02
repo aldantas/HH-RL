@@ -65,7 +65,7 @@ def output_path(args, config, instance_name, rootdir=''):
     if 'MAB' in args.agent or args.agent == 'RAND':
         state_dir = 'NONE'
     else:
-        state_dir = args.agent
+        state_dir = args.state
     return pathlib.Path(f'{rootdir}/{args.problem}/{instance_name}/{args.agent}/{state_dir}/{args.reward}/{args.acceptance}/{config_name}')
 
 
