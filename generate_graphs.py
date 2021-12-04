@@ -216,13 +216,14 @@ def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, outp
     plt.close()
 
 
-def make_heuristic_plot(results_dict, problem):
+def make_heuristic_plot(results_dict, output_dir, problem_name):
     # loader.n_snapshots = 100
-    attributes = ['heuristic_hist']
-    with open(f'hyflex/problems_json/{problem}.json', 'r') as json_file:
+    # attributes = ['heuristic_hist']
+    with open(f'hyflex/problems_json/{problem_name}.json', 'r') as json_file:
         problem_dict = json.load(json_file)
     heuristic_names = problem_dict['actions']
-    for instance, instance_dict in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
+    print(heuristic_names)
+    for instance, instance_dict in results_dict.items():
         for config in instance_dict:
             heuristic_hists = instance_dict[config]
             plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir)
@@ -259,10 +260,13 @@ def main(experiments):
     input_dir='results_data_HHRL_states'
     output_root = 'states_plots_rip/'
     # problem_list = ['TSP', 'FS', 'BP', 'SAT', 'VRP', 'PS']
-    problem_list = ['TSP', 'FS']
+    problem_list = ['TSP', 'FS', 'BP', 'SAT']
+    # problem_list = ['TSP']
     instance_list = None
-    attributes = ['best_fitness']
+    # instance_list = ['d1291']
     loader = Loader()
+    attributes = ['best_fitness']
+    # attributes = ['heuristic_hist']
     for experiment_name, config_list in experiments.items():
         all_dict = {}
         try:
@@ -273,7 +277,7 @@ def main(experiments):
                 all_dict |= problem_dict
                 # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
                 # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
-                make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+                # make_heuristic_plot(problem_dict, output_dir, problem)
             output_dir = f'{output_root}/ALL'
             # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
             make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
@@ -289,6 +293,9 @@ if __name__ == '__main__':
             # 'DQN-S1fir_discrete-SW': [('DQN', 'S1', 'fir_discrete'), ('DQN', 'SW')],
             # 'DQN-S1-FRRMAB': [('DQN', 'S1', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
             # 'DQN-S1firdiscrete-FRRMAB': [('DQN', 'S1', 'fir-discrete'), ('FRRMAB')],
-            'DQN-S1-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
+            # 'DQN-S1-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
+            'DQN-S1-S2': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config')],
+            # 'heuristic_plots': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN', 'S3',
+            #     'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
             }
     main(experiments)

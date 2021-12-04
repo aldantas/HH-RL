@@ -19,12 +19,12 @@ configs=(
 	)
 
 problems=(
-	# TSP
-	# FS
-	# SAT
-	VRP
-	PS
+	TSP
+	FS
+	SAT
 	BP
+	# VRP
+	# PS
 	)
 
 #depois BP SW e S2 com --ow
@@ -42,7 +42,8 @@ states=(
 	# BOLLP
 	# S1
 	# S2
-	S3
+	# S3
+	S4
 	)
 
 rewards=(

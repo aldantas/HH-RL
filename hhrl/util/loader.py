@@ -143,7 +143,8 @@ class Loader:
                 for config_path in paths_dict[instance_path]:
                     full_path = f'{instance_path}/{config_path}'
                     count = len(os.listdir(full_path))
-                    problem_configs.append((full_path, count))
+                    if 'MAB' in full_path:
+                        problem_configs.append((full_path, count))
             problem_configs.sort()
             for config in problem_configs:
                 print(config)

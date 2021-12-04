@@ -2,7 +2,7 @@ import os
 from hhrl.util import Loader
 
 l = Loader()
-l.check_experiments('/home/aldantas/nas/aldantas/results_data_HHRL_states/')
+l.check_experiments('results_data_HHRL_states/')
 
 # for line in open('temp.txt'):
 #     # cur_dir = '/home/aldantas/github/HH-RL'

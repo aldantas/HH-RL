@@ -91,7 +91,7 @@ def main(args):
 
 def parse_args(desc=''):
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('-p', '--problem', type=str, default='BP')
+    parser.add_argument('-p', '--problem', type=str, default='TSP')
     parser.add_argument('-c', '--config', type=str, default='configs/default-config.ini')
     parser.add_argument('-o', '--output_dir', type=str, default='tmp')
     parser.add_argument('-i', '--instance_id', type=int, default=1)
@@ -99,7 +99,7 @@ def parse_args(desc=''):
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQN')
     parser.add_argument('-rw', '--reward', type=str, default='RIP')
-    parser.add_argument('-st', '--state', type=str, default='S2')
+    parser.add_argument('-st', '--state', type=str, default='S4')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()
