@@ -26,7 +26,7 @@ class FRRMABAgent(Agent):
         self.sliding_window.clear()
         self.t = 0
 
-    def update(self, action, reward, *args):
+    def update(self, action, reward, **kwargs):
         self.t += 1
         action_idx = self.actions.index(action)
         self.sliding_window.update(action_idx, reward)

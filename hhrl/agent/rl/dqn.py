@@ -38,9 +38,9 @@ class DQNAgent(Agent):
     def get_env_state(self):
         return self.state
 
-    def update(self, action, reward, solution):
+    def update(self, action, reward, **kwargs):
         action_idx = self.actions.index(action)
-        self.state_env.update(action, reward, solution)
+        self.state_env.update(action=action, reward=reward, **kwargs)
         next_state = self.state_env.get_state()
 
         next_qvalues = self.__get_qvalues(next_state)

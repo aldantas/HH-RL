@@ -13,5 +13,5 @@ class Agent:
     def get_env_state(self):
         return None
 
-    def update(self, action, reward, *args):
+    def update(self, **kwargs):
         pass

@@ -24,7 +24,7 @@ class DMABAgent(Agent):
         self.action_attempts = [0] * len(self.actions)
         self.t = 0
 
-    def update(self, action, reward, *args):
+    def update(self, action, reward, **kwargs):
         self.ph.add_element(reward)
         if self.ph.detected_change():
             self.p += 1

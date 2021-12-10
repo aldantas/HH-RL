@@ -259,8 +259,8 @@ def print_avg_fitness(results_dict, problem):
 def main(experiments):
     input_dir='results_data_HHRL_states'
     output_root = 'states_plots_rip/'
-    # problem_list = ['TSP', 'FS', 'BP', 'SAT', 'VRP', 'PS']
-    problem_list = ['TSP', 'FS', 'BP', 'SAT']
+    problem_list = ['TSP', 'FS', 'BP', 'SAT', 'VRP', 'PS']
+    problem_list = ['TSP', 'FS', 'SAT']
     # problem_list = ['TSP']
     instance_list = None
     # instance_list = ['d1291']
@@ -294,7 +294,11 @@ if __name__ == '__main__':
             # 'DQN-S1-FRRMAB': [('DQN', 'S1', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
             # 'DQN-S1firdiscrete-FRRMAB': [('DQN', 'S1', 'fir-discrete'), ('FRRMAB')],
             # 'DQN-S1-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
-            'DQN-S1-S2': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config')],
+            'DQN-S1-S2-S3-S4-SW-FRRMAB-NOBP': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN',
+                'S3', 'default-config'), ('DQN', 'S4', 'default-config'), ('DQN', 'SW', 'default-config'),
+                ('FRRMAB', 'S1', 'default-config')],
+            # 'DQN-S1-S3-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN', 'SW', 'default-config'),
+            #     ('FRRMAB', 'S1', 'default-config')],
             # 'heuristic_plots': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN', 'S3',
             #     'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
             }

@@ -21,7 +21,7 @@ class FitnessImprovementRate:
             return [self._get_discrete_state()]
         return [self.fir]
 
-    def update(self, action, reward, solution):
+    def update(self, solution, **kwargs):
         if self.last_fitness != None:
             self.fir = (self.last_fitness - solution.fitness) / self.last_fitness
         self.last_fitness = solution.fitness

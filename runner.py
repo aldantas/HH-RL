@@ -8,12 +8,9 @@ from hhrl.agent.mab import DMABAgent, FRRMABAgent
 from hhrl.agent.rl import DQNAgent, DQNUCBAgent
 from hhrl.reward import *
 from hhrl.state import *
-from hhrl.state.landscape import *
 from hhrl.acceptance import AcceptAll
 from hhrl.hh import HyperHeuristic
 from hhrl.problem import *
-
-from custom_states import *
 
 
 agent_dict = {
@@ -37,12 +34,13 @@ reward_dict = {
         }
 
 state_dict = {
-        'SW': SlidingWindowState,
-        'BOLLP': BoLLP,
-        'FDC': FitnessDistanceCorrelation,
-        'DISP': DispersionMetric,
+        'SW': [SlidingWindowState],
+        'S1': [FitnessImprovementRate, LastActionVector],
+        'S2': [UnitaryFitnessDistanceCorrelation, LastActionVector],
+        'S3': [LastActionVector],
+        'S4': [FitnessImprovementRate, UnitaryFitnessDistanceCorrelation, LastActionVector],
+        'S5': [ElapsedTime, LastActionVector],
         }
-state_dict.update(custom_state_dict)
 
 
 acceptance_dict = {
@@ -78,7 +76,7 @@ def main(args):
     if (path / f'{args.run_id}.dat').exists() and not args.overwrite:
         return
     actions = problem.actions
-    state_env = state_dict[args.state](config, actions=actions)
+    state_env = StateBuilder(state_dict[args.state], config, actions=actions, time_limit=args.time_limit)
     agent = agent_dict[args.agent](config, actions, state_env=state_env)
     reward = reward_dict[args.reward](config, actions)
     acceptance = acceptance_dict[args.acceptance]()
@@ -99,7 +97,7 @@ def parse_args(desc=''):
     parser.add_argument('-t', '--time_limit', type=int, default=3)
     parser.add_argument('-ag', '--agent', type=str, default='DQN')
     parser.add_argument('-rw', '--reward', type=str, default='RIP')
-    parser.add_argument('-st', '--state', type=str, default='S4')
+    parser.add_argument('-st', '--state', type=str, default='S5')
     parser.add_argument('-ac', '--acceptance', type=str, default='ALL')
     parser.add_argument('-ow', '--overwrite', default=False, action='store_true')
     return parser.parse_args()

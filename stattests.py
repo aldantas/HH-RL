@@ -85,7 +85,7 @@ class StatTests:
                 plot <- plotPvalues(post.results$corrected.pval, alg.order=alg.order)
                 plot + labs(title="Corrected p-values")
                 # scale_fill_gradientn("Corrected p-values", colours=c("skyblue4", "orange"))
-                ggsave(matrix_filepath, width=300, unit='mm')
+                ggsave(matrix_filepath, width=500, unit='mm')
                 return(post.results)
             }
                 '''

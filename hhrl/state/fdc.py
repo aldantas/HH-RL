@@ -62,7 +62,7 @@ class FitnessDistanceCorrelation:
     def get_state(self):
         return [self.fdc]
 
-    def update(self, action, reward, solution):
+    def update(self, solution, **kwargs):
         if self.update_optima_list(solution):
             self.update_dist_list()
         self.solution_list.push(solution)
