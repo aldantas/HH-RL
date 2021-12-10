@@ -33,6 +33,7 @@ reward_dict = {
         'DIP': DiscreteImprovementPenalty,
         }
 
+
 state_dict = {
         'SW': [SlidingWindowState],
         'S1': [FitnessImprovementRate, LastActionVector],
@@ -40,6 +41,7 @@ state_dict = {
         'S3': [LastActionVector],
         'S4': [FitnessImprovementRate, UnitaryFitnessDistanceCorrelation, LastActionVector],
         'S5': [ElapsedTime, LastActionVector],
+        'S6': [FitnessImprovementRate, ElapsedTime, LastActionVector],
         }
 
 

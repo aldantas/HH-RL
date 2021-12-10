@@ -23,8 +23,8 @@ problems=(
 	FS
 	SAT
 	BP
-	# VRP
-	# PS
+	VRP
+	PS
 	)
 
 #depois BP SW e S2 com --ow
@@ -43,7 +43,9 @@ states=(
 	# S1
 	# S2
 	# S3
-	S4
+	# S4
+	S5
+	S6
 	)
 
 rewards=(
