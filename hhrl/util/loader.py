@@ -146,7 +146,8 @@ class Loader:
                     problem_configs.append((full_path, count))
             problem_configs.sort()
             for config in problem_configs:
-                print(config)
+                if config[1] != 31:
+                    print(config)
 
 
     def load_problems(self, root_dir, problem_list, config_list, attribute_list, instance_list=None, split_depth=1, use_attr_list=False):
