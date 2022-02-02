@@ -100,7 +100,14 @@ class Loader:
                             instance_dict[config_key].setdefault(attr_str, []).append(attr_value)
             yield instance_key, instance_dict
 
-    def lazy_load_instances(self, root_dir, config_list, attribute_list, instance_list, split_depth=1, use_attr_list=False):
+    def __get_config_index(self, path_parts, config_list):
+        for i, config_parts in enumerate(config_list):
+            if set(path_parts).issuperset(set(config_parts)):
+                return i
+        return None
+
+    def lazy_load_instances(self, root_dir, config_list, attribute_list, instance_list, config_keys=[],
+            split_depth=1, use_attr_list=False):
         paths_dict = self.get_paths_dict(root_dir, instance_list, config_list, split_depth)
         for instance_path in tqdm(paths_dict):
             instance_key = self.__tuple_to_str_key(instance_path.parts[1:])
@@ -109,11 +116,18 @@ class Loader:
                 path = instance_path / config_path
                 # TODO: parameterize the config_key slicing
                 # config_key = self.__tuple_to_str_key(config_path.parts[:2])
-                config_key = self.__tuple_to_str_key(config_path.parts)
+
+                if config_keys:
+                    config_idx = self.__get_config_index(config_path.parts, config_list)
+                    config_key = config_keys[config_idx]
+                else:
+                    config_key = self.__tuple_to_str_key(config_path.parts)
+
                 if use_attr_list:
                     instance_dict[config_key] = []
                 else:
                     instance_dict[config_key] = {}
+
                 for file in tqdm(os.listdir(path), leave=False):
                     for attr_str, attr_value in self.read_file_attrs(path / file, attribute_list):
                         if use_attr_list:
@@ -150,13 +164,14 @@ class Loader:
                     print(config)
 
 
-    def load_problems(self, root_dir, problem_list, config_list, attribute_list, instance_list=None, split_depth=1, use_attr_list=False):
+    def load_problems(self, root_dir, problem_list, config_list, attribute_list, instance_list=None,
+            config_keys=[], split_depth=1, use_attr_list=False):
         results_dict = {}
         for problem in problem_list:
             problem_dir = f'{root_dir}/{problem}'
             problem_dict = {}
             for instance_key, instance_dict in self.lazy_load_instances(
-                    problem_dir, config_list, attribute_list, instance_list, split_depth, use_attr_list):
+                    problem_dir, config_list, attribute_list, instance_list, config_keys, split_depth, use_attr_list):
                 if len(instance_dict.values()) < len(config_list):
                     continue
                 problem_dict[instance_key] = instance_dict

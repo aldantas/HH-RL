@@ -4,7 +4,7 @@ class Agent:
         self.policy = policy
 
     def reset(self):
-        pass
+        raise NotImplementedError
 
     def select(self):
         action_idx = self.policy.select(self)
@@ -14,4 +14,4 @@ class Agent:
         return None
 
     def update(self, **kwargs):
-        pass
+        raise NotImplementedError

@@ -269,19 +269,20 @@ def main(experiments):
     # loader.n_snapshots = 100
     attributes = ['best_fitness']
     # attributes = ['heuristic_hist']
-    for experiment_name, config_list in experiments.items():
+    for experiment_name, config_dict in experiments.items():
         all_dict = {}
         try:
+            config_keys, config_list = zip(*config_dict.items())
             for problem, problem_dict in loader.load_problems(input_dir, problem_list, config_list, attributes,
-                    instance_list=instance_list, split_depth=5):
+                    instance_list=instance_list, config_keys=config_keys, split_depth=5, use_attr_list=True):
                 output_dir = f'{output_root}/{problem}'
                 make_hypothesis_test(problem_dict, output_dir, problem, experiment_name)
-                # all_dict.update(problem_dict)
+                all_dict.update(problem_dict)
                 # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
                 # make_heuristic_plot(problem_dict, output_dir, problem)
             # output_dir = f'{output_root}/ALL'
             # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-            # make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
+            make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
         except UnboundLocalError:
             print(f'Error in {experiment_name}')
             continue
@@ -300,8 +301,19 @@ if __name__ == '__main__':
             #     ('FRRMAB', 'S1', 'default-config')],
             # 'DQN-S1-S3-S5-S6': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN',
             #     'S5', 'default-config'), ('DQN', 'S6', 'default-config')],
-            'DQN-S1-S3-S5-S6-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN',
-                'S5', 'default-config'), ('DQN', 'S6', 'default-config'), ('FRRMAB', 'S1', 'default-config')]
+            # 'DQN-S1-S3-S5-S6-FRRMAB': {
+            #     'DQN-S1': ('DQN', 'S3', 'default-config'),
+            #     'DQN-S2': ('DQN', 'S1', 'default-config'),
+            #     'DQN-S3': ('DQN', 'S5', 'default-config'),
+            #     'DQN-S4': ('DQN', 'S6', 'default-config'),
+            #     'FRRMAB': ('FRRMAB', 'S1', 'default-config'),
+            # }
+            'DQN-S1-S3-S5-S6': {
+                'DQN-S1': ('DQN', 'S3', 'default-config'),
+                'DQN-S2': ('DQN', 'S1', 'default-config'),
+                'DQN-S3': ('DQN', 'S5', 'default-config'),
+                'DQN-S4': ('DQN', 'S6', 'default-config'),
+            }
             # 'DQN-S1-S3-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN', 'SW', 'default-config'),
             #     ('FRRMAB', 'S1', 'default-config')],
             # 'heuristic_plots': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN', 'S3',

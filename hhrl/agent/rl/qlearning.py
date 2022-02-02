@@ -41,10 +41,10 @@ class QLearningAgent(Agent):
 
         next_qvalues = self.__get_qvalues(next_state)
 
-        old_value = (1 - self.learning_rate) * self.q_table[self.state][action]
+        old_value = (1 - self.learning_rate) * self.q_table[self.state][action_idx]
         temporal_difference = self.learning_rate * (reward + self.gamma * max(next_qvalues))
 
-        self.q_table[self.state][action] = old_value + temporal_difference
+        self.q_table[self.state][action_idx] = old_value + temporal_difference
 
         self.state = next_state
         self.value_estimates = next_qvalues
