@@ -13,6 +13,7 @@ from hhrl.util import Loader
 from stattests import StatTests
 from tablemaker import TableMaker
 
+
 MEDIUM_SIZE = 16
 
 
@@ -216,13 +217,13 @@ def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, outp
     plt.close()
 
 
-def make_heuristic_plot(results_dict, output_dir, problem_name):
+def make_heuristic_plot(results_dict, problem):
+    # loader.n_snapshots = 100
     attributes = ['heuristic_hist']
-    with open(f'hyflex/problems_json/{problem_name}.json', 'r') as json_file:
+    with open(f'hyflex/problems_json/{problem}.json', 'r') as json_file:
         problem_dict = json.load(json_file)
     heuristic_names = problem_dict['actions']
-    print(heuristic_names)
-    for instance, instance_dict in results_dict.items():
+    for instance, instance_dict in loader.lazy_load(input_dir, attributes, 4, black_list, key_whitelist, True):
         for config in instance_dict:
             heuristic_hists = instance_dict[config]
             plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir)
@@ -234,13 +235,11 @@ def make_hypothesis_test(results_dict, output_dir, problem_name, configs):
     df = pd.DataFrame.from_dict(results_dict, orient='index')
     experiment_name = f'{problem_name}_{configs}'
     performance_dict = stat.kruskal_dunn(df, f'{experiment_name}_instance_performance.pdf')
-
     df = df.applymap(np.mean)
     correct = 'bergmann'
     control = None
     stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
             correct=correct, control=control)
-
     # correct = 'finner'
     # control = 'DQN'
     # stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
@@ -251,86 +250,33 @@ def make_hypothesis_test(results_dict, output_dir, problem_name, configs):
 def print_avg_fitness(results_dict, problem):
     print(problem)
     for instance in results_dict:
+        print(results_dict[instance])
         print(instance)
-        instance_results = results_dict[instance]
-        for config in instance_results:
-            print(f'{config}: {np.mean(instance_results[config])}')
+        print(np.mean(results_dict[instance]['best_fintess']))
 
 
-def main(experiments):
+def main():
     input_dir='results_data_HHRL_states'
-    output_root = 'cec2022_plots_final'
-    problem_list = ['TSP', 'FS', 'BP', 'SAT', 'VRP', 'PS']
-    # problem_list = ['TSP', 'FS', 'SAT']
-    # problem_list = ['TSP']
-    instance_list = None
-    # instance_list = ['d1291']
-    loader = Loader()
-    # loader.n_snapshots = 100
+    output_root = 'states_plots_rip/'
+    all_problem_list = ['TSP']
+    config_list = [('DQN', 'S1', 'default-config'), ('DQN', 'SW')]
     attributes = ['best_fitness']
-    # attributes = ['heuristic_hist']
-    for experiment_name, config_dict in experiments.items():
-        all_dict = {}
-        try:
-            config_keys, config_list = zip(*config_dict.items())
-            for problem, problem_dict in loader.load_problems(input_dir, problem_list, config_list, attributes,
-                    instance_list=instance_list, config_keys=config_keys, split_depth=5, use_attr_list=True):
-                output_dir = f'{output_root}/{problem}'
-                make_hypothesis_test(problem_dict, output_dir, problem, experiment_name)
-                all_dict.update(problem_dict)
-                # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
-                # make_heuristic_plot(problem_dict, output_dir, problem)
-            output_dir = f'{output_root}/ALL'
-            make_hypothesis_test(all_dict, output_dir, 'ALL', experiment_name)
-            # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        except UnboundLocalError:
-            print(f'Error in {experiment_name}')
-            continue
+    loader = Loader()
+    for problem in all_problem_list:
+        problem_list = [problem]
+        results_dict = loader.load2(input_dir, problem_list, config_list, attributes, 5, True)
+        output_dir = f'{output_root}/{problem}'
+        # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+        # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
+        # make_hypothesis_test(results_dict, output_dir, problem, 'DQN-S1-SW')
+        print_avg_fitness(results_dict, problem)
+        # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+    black_list = ignore_configs
+    output_dir = f'{output_root}/ALL'
+    # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+    results_dict = loader.load2(input_dir, all_problem_list, config_list, attributes, 5, True)
+    make_hypothesis_test(results_dict, output_dir, 'ALL', 'DQN-S1-SW')
 
 
 if __name__ == '__main__':
-    experiments = {
-            # 'DQN-S1-configs': [('DQN', 'S1')],
-            # 'DQN-S1-SW': [('DQN', 'S1', 'default-config'), ('DQN', 'SW')],
-            # 'DQN-S1fir_discrete-SW': [('DQN', 'S1', 'fir_discrete'), ('DQN', 'SW')],
-            # 'DQN-S1-FRRMAB': [('DQN', 'S1', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
-            # 'DQN-S1firdiscrete-FRRMAB': [('DQN', 'S1', 'fir-discrete'), ('FRRMAB')],
-            # 'DQN-S1-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
-            # 'DQN-S1-S2-S3-S4-SW-FRRMAB-NOBP': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN',
-            #     'S3', 'default-config'), ('DQN', 'S4', 'default-config'), ('DQN', 'SW', 'default-config'),
-            #     ('FRRMAB', 'S1', 'default-config')],
-            # 'DQN-S1-S3-S5-S6': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN',
-            #     'S5', 'default-config'), ('DQN', 'S6', 'default-config')],
-            # 'DQN-S1-S3-S5-S6-FRRMAB': {
-            #     'DQN-S1': ('DQN', 'S3', 'default-config'),
-            #     'DQN-S2': ('DQN', 'S1', 'default-config'),
-            #     'DQN-S3': ('DQN', 'S5', 'default-config'),
-            #     'DQN-S4': ('DQN', 'S6', 'default-config'),
-            #     'FRRMAB': ('FRRMAB', 'S1', 'default-config'),
-            # }
-            # 'DQN-S1-S3-S5-S6-S1d-QL': {
-            #     'S1': ('DQN', 'S3', 'default-config'),
-            #     'S2': ('DQN', 'S1', 'default-config'),
-            #     'S3': ('DQN', 'S5', 'default-config'),
-            #     'S4': ('DQN', 'S6', 'default-config'),
-            #     'S5': ('DQN', 'S1', 'fir_discrete'),
-            #     'QL-S5': ('QL', 'S1', 'fir_discrete'),
-            # }
-            # 'DQN-states': {
-            #     'S1': ('DQN', 'S3', 'default-config'),
-            #     'S2': ('DQN', 'S1', 'default-config'),
-            #     'S3': ('DQN', 'S5', 'default-config'),
-            #     'S4': ('DQN', 'S6', 'default-config'),
-            #     'S5': ('DQN', 'S1', 'fir_discrete'),
-            # }
-            'DQN-QL-FRRMAB': {
-                'Approximate': ('DQN', 'S1', 'fir_discrete'),
-                'Tabular': ('QL', 'S1', 'fir_discrete'),
-                'FRRMAB': ('FRRMAB', 'S1', 'default-config'),
-            }
-            # 'DQN-S1-S3-SW-FRRMAB': [('DQN', 'S1', 'default-config'), ('DQN', 'S3', 'default-config'), ('DQN', 'SW', 'default-config'),
-            #     ('FRRMAB', 'S1', 'default-config')],
-            # 'heuristic_plots': [('DQN', 'S1', 'default-config'), ('DQN', 'S2', 'default-config'), ('DQN', 'S3',
-            #     'default-config'), ('DQN', 'SW', 'default-config'), ('FRRMAB', 'S1', 'default-config')],
-            }
-    main(experiments)
+    main()

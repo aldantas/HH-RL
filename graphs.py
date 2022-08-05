@@ -195,7 +195,7 @@ def make_hypothesis_test(input_dir, output_dir, problem_name, black_list, key_wh
     # control = 'DQN'
     # stat.friedman_post(df, f'{experiment_name}_rank_{correct}.pdf', f'{experiment_name}_matrix_{correct}.pdf',
     #         correct=correct, control=control)
-    save_configs_performance(f'{output_dir}/{problem_name}_configs_performance', results_dict, performance_dict, problem_name, 'csv')
+    save_configs_performance(f'{output_dir}/{experiment_name}_configs_performance', results_dict, performance_dict, problem_name, 'tex')
 
 
 def plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir, n_phases=10):
@@ -249,39 +249,30 @@ def make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelis
             plot_heuristic_hist(instance, heuristic_hists, heuristic_names, config, output_dir)
 
 
+
 def main():
-    input_dir = 'results_data_HHRL//'
-    output_root = 'ssci_plots'
+    input_dir = 'results_data_HHRL_states/'
+    output_root = 'states_plots_rip/'
     # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
-    key_whitelist = ['DQN', 'IOP', 'IR']
-    # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
-    problems = ['FS']
-    ignore_configs = ['EV', 'rank_decay_05', 'IND', 'IOD', 'DIV',
-            'RAND', 'PS', 'BP', 'VRP', 'TSP', 'SAT', 'FRRMAB', 'DMAB']
+    key_whitelist = ['DQN', 'S1']
+    problems = ['FS', 'TSP']
+    ignore_configs = ['FRRMAB', 'BP', 'PS', 'VRP', 'SAT', 'BOLLP', 'RAND']
+    # ignore_configs = ['EV', 'rank_decay_05', 'IND', 'IOD', 'IOP', 'DIV', 'RAND', 'DIP',
+    #         'epsilon_10', 'DQN/IR', 'FRRMAB/IR', 'DMAB/IR']
     # ignore_configs += ['FS', 'SAT', 'PS', 'BP', 'VRP']
     for problem in problems:
         black_list = problems + ignore_configs
         black_list.remove(problem)
         output_dir = f'{output_root}/{problem}'
         # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-        # make_history_plots(input_dir, output_dir, black_list, key_whitelist)
+        make_history_plots(input_dir, output_dir, black_list, key_whitelist)
         make_hypothesis_test(input_dir, output_dir, problem, black_list, key_whitelist)
-        # make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
-    # black_list = ignore_configs
-    # output_dir = f'{output_root}/ALL'
-    # # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
-    # make_hypothesis_test(input_dir, output_dir, 'ALL', black_list, key_whitelist)
+        make_heuristic_plot(input_dir, output_dir, problem, black_list, key_whitelist)
+    black_list = ignore_configs
+    output_dir = f'{output_root}/ALL'
+    # make_boxplots(input_dir, output_dir, black_list, key_whitelist)
+    make_hypothesis_test(input_dir, output_dir, 'ALL', black_list, key_whitelist)
 
 
 if __name__ == '__main__':
-    # loader = Loader()
-    # attributes = ['best_fitness']
-    # input_dir = 'HHRL_new_UCB/'
-    # output_root = 'plots_new_UCB'
-    # key_whitelist = ['DQN', 'DMAB', 'FRRMAB']
-    # problems = ['BP', 'FS', 'PS', 'SAT', 'TSP', 'VRP']
-    # ignore_configs = ['EV', 'rank_decay_05']
-    # black_list = problems + ignore_configs
-    # black_list.remove('VRP')
-    # results_dict = loader.load(input_dir, attributes, 4, black_list, key_whitelist, True)
     main()
