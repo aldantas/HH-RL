@@ -19,10 +19,10 @@ configs=(
 	)
 
 problems=(
-	# TSP
-	# FS
-	# SAT
-	# BP
+	TSP
+	FS
+	SAT
+	BP
 	VRP
 	PS
 	)
@@ -30,23 +30,24 @@ problems=(
 #depois BP SW e S2 com --ow
 
 agents=(
-	# DQN
+	DQN
 	# DQNUCB
 	# DMAB
 	# FRRMAB
 	# RAND
-	QL
+	# QL
 	)
 
 states=(
 	# SW
 	# BOLLP
-	S1
+	# S1
 	# S2
 	# S3
 	# S4
 	# S5
 	# S6
+	S7
 	)
 
 rewards=(

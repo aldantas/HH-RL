@@ -43,6 +43,7 @@ state_dict = {
         'S4': [FitnessImprovementRate, UnitaryFitnessDistanceCorrelation, LastActionVector],
         'S5': [ElapsedTime, LastActionVector],
         'S6': [FitnessImprovementRate, ElapsedTime, LastActionVector],
+        'S7': [FitnessImprovementRate, ElapsedTime],
         }
 
 
